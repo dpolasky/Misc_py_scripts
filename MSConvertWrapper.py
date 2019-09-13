@@ -19,7 +19,8 @@ def format_commands(filename):
     """
     cmd_str = '{} {} --mzML -z --64 -o {}'.format(tool_path, filename, out_dir)
     cmd_str += ' --filter "peakPicking true 1-"'
-    cmd_str += ' --filter "MS2Deisotope Poisson minCharge=1 maxCharge=4"'
+    cmd_str += ' --filter "MS2Deisotope Poisson minCharge=1 maxCharge=5"'
+    # cmd_str += ' --filter "MS2Deisotope hi_res"'
 
     print(cmd_str)
     return cmd_str
