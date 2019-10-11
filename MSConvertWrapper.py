@@ -29,7 +29,7 @@ def format_commands(filename, deisotope, activation_method=''):
     """
     # create output directory
     if deisotope:
-        output_dir = os.path.join(os.path.dirname(filename), '{}_deiso_output'.format(activation_method))
+        output_dir = os.path.join(os.path.dirname(filename), '{}_deiso'.format(activation_method))
     else:
         output_dir = os.path.join(os.path.dirname(filename), '{}'.format(activation_method))
     if not os.path.exists(output_dir):
