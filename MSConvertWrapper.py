@@ -11,7 +11,7 @@ import multiprocessing
 tool_path = r"C:\Program Files\ProteoWizard\ProteoWizard 3.0.19194.9338c77b2\msconvert.exe"
 out_dir = ''
 DEISOTOPE = True
-RUN_BOTH = False
+RUN_BOTH = True
 THREADS = 12
 
 MAX_CHARGE = 4
@@ -55,7 +55,7 @@ def format_commands(filename, deisotope, activation_method=''):
 def run_cmd(command_str):
     """
     Run subprocess
-    :param cmd: string command
+    :param command_str: string command
     :return: void
     """
     subprocess.run(command_str)
