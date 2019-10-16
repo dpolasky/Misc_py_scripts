@@ -5,6 +5,7 @@ quickly calculate glycan mass from a list
 import tkinter
 from tkinter import filedialog
 import os
+import itertools
 
 MASS_DICT = {'HexNAc': 203.07937,
              'Hex': 162.05282,
@@ -109,12 +110,56 @@ def write_output(masses, glycans, filename):
         outfile.write(single_string)
 
 
+def gen_glyco_masses(hexnacs, hexes, fucs, neuacs, phosphos):
+    """
+    Generate all combinations of provided components
+    :param hexnacs: [min, max]
+    :param hexes: [min, max]
+    :param fucs: [min, max]
+    :param neuacs: [min, max]
+    :param phosphos: [min, max]
+    :return: list of (name, mass)
+    """
+    all_outputs = []
+    for hexnac_count in range(hexnacs[0], hexnacs[1]):
+        for hex_count in range(hexes[0], hexes[1]):
+            for fuc_count in range(fucs[0], fucs[1]):
+                for neuac_count in range(neuacs[0], neuacs[1]):
+                    for phosph_count in range(phosphos[0], phosphos[1]):
+                        mass = MASS_DICT['HexNAc'] * hexnac_count + MASS_DICT['Hex'] * hex_count + MASS_DICT['Fuc'] * fuc_count + MASS_DICT['NeuAc'] * neuac_count + MASS_DICT['Phospho'] * phosph_count
+                        name = 'HexNAc,{},Hex,{},Fuc,{},NeuAc,{},Phosph,{}'.format(hexnac_count, hex_count, fuc_count, neuac_count, phosph_count)
+                        all_outputs.append((name, mass))
+    return all_outputs
+    # combo_inputs = []
+    # for key, range_list in dict_glyc_ranges.items():
+    #     for num in range(range_list[0], range_list[1]):
+    #         new_key_parts = []
+    #         for _ in range(num):
+    #             new_key_parts.append(key)
+    #         combo_inputs.append('_'.join(new_key_parts))
+    #
+    # # iterate over all combinations of all possible numbers of the input
+    # for combo in itertools.combinations(combo_inputs, len(dict_glyc_ranges.keys())):
+    #     both_parts = combo[0] + combo[1]
+
+
 if __name__ == '__main__':
     root = tkinter.Tk()
     root.withdraw()
 
-    in_file = filedialog.askopenfilename(filetypes=[('.csv', '.csv')])
-    read_masses, read_glycans = glycan_text_to_mass(in_file)
-    outfilepath = os.path.join(os.path.dirname(in_file), 'output.csv')
-    write_output(read_masses, read_glycans, outfilepath)
+    # in_file = filedialog.askopenfilename(filetypes=[('.csv', '.csv')])
+    # read_masses, read_glycans = glycan_text_to_mass(in_file)
+    # outfilepath = os.path.join(os.path.dirname(in_file), 'output.csv')
+    # write_output(read_masses, read_glycans, outfilepath)
 
+    # NOTE: b/c range, it goes to 1 less than specified (so use [0, 1] to ignore)
+    masses = gen_glyco_masses(hexnacs=[1, 7], hexes=[0, 11], fucs=[0, 6], neuacs=[0, 3], phosphos=[0, 1])
+    root.clipboard_clear()
+    outputs = []
+    outputs.append('Name,Mass\n')
+    for mass_tup in masses:
+        outputs.append('{},{}\n'.format(mass_tup[0], mass_tup[1]))
+        print('{},{}'.format(mass_tup[0], mass_tup[1]))
+    root.clipboard_append(''.join(outputs))
+    root.mainloop()
+    # root.destroy()
