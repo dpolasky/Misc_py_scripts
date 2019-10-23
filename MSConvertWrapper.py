@@ -11,10 +11,10 @@ import multiprocessing
 tool_path = r"C:\Program Files\ProteoWizard\ProteoWizard 3.0.19194.9338c77b2\msconvert.exe"
 out_dir = ''
 DEISOTOPE = True
-RUN_BOTH = True
+RUN_BOTH = False
 THREADS = 12
 
-MAX_CHARGE = 4
+MAX_CHARGE = 6
 ACTIVATION_LIST = ['ETD', 'HCD']   # 'ETD', 'HCD', etc. IF NOT USING, SET TO ['']
 # ACTIVATION_LIST = ['']
 
