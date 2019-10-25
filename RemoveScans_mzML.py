@@ -7,57 +7,61 @@ module for removing scans from an mzML file without using MSConvert. Why? Becaus
 import tkinter
 from tkinter import filedialog
 import os
-import xml.etree.ElementTree as Et
 from enum import Enum
-from pyteomics import mzml
+import pyopenms
 
 
 class ActivationType(Enum):
     """
     Holder for filetypes
     """
-    HCD = 'hcd'
-    ETD = 'etd'
+    HCD = 8
+    ETD = 11
+    CID = 0
+    ECD = 5
+    BIRD = 4
+    IRMPD = 6
 
 
-def filter_scans(mzml_file, activations_allowed, activations_not_allowed):
+def filter_scans(mzml_file, exact_activation_list, output_dir):
     """
     Remove scans matching the provided activation rule
     :param mzml_file: mzML file path
-    :param activations_allowed: list of ActivationType
-    :param activations_not_allowed: list of ActivationType
+    :param exact_activation_list: list of ActivationType. Exact match required to ALL activation types specified
+    :param output_dir: where to save
     :return: void
     """
-    # with mzml.read(mzml_file) as reader:
-    #     reader.
+    print('loading file {}'.format(mzml_file))
+    exp = pyopenms.MSExperiment()
+    pyopenms.MzMLFile().load(mzml_file, exp)
+    activation_ints = [x.value for x in exact_activation_list]
 
-    tree = Et.parse(mzml_file)
-    treeroot = tree.getroot()
+    filtered_spectra = []
+    for index, spectrum in enumerate(exp.getSpectra()):
+        if index % 5000 == 0:
+            print('filtered {} spectra'.format(index))
+        precs = spectrum.getPrecursors()
+        lvl = spectrum.getMSLevel()
+        if lvl == 1:
+            filtered_spectra.append(spectrum)
+        elif lvl == 2:
+            for precursor in precs:
+                act = precursor.getActivationMethods()
+                if len(act) == len(exact_activation_list):
+                    # correct number of activation types
+                    all_found = True
+                    for method in act:
+                        if method not in activation_ints:
+                            all_found = False
+                    if all_found:
+                        filtered_spectra.append(spectrum)
 
-    # iterate over matches
-    for thing in treeroot:
-        for thing2 in thing:
-            for thing3 in thing2:
-                for spectrum in thing3:
-                    for scan_list in spectrum:
-                        for scan_info in scan_list:
-                            for scan in scan_info:
-                                try:
-                                    if scan.attrib['name'] == 'filter string':
-                                        scan_header = scan.attrib['value']
-                                        if 'hcd' in scan_header or 'etd' in scan_header:
-                                            # MS2 scan - do filtering
-                                            for activation in activations_not_allowed:
-                                                if activation.value in scan_header:
-                                                    thing3.remove(spectrum)
+    exp.setSpectra(filtered_spectra)
 
-                                        print(scan.attrib['value'])
-                                except KeyError:
-                                    continue
-        # charge = int(child_spectrum_query.attrib['assumed_charge'])
-        # for search_result in child_spectrum_query:
-        #     for search_hit in search_result:
-        #         combined_score_container.add_psm(search_hit, charge)
+    output_file = os.path.join(output_dir, os.path.basename(mzml_file))
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    pyopenms.MzMLFile().store(output_file, exp)
 
 
 if __name__ == '__main__':
@@ -65,5 +69,9 @@ if __name__ == '__main__':
     root.withdraw()
 
     mzmls = filedialog.askopenfilenames(filetypes=[('mzML', '.mzml')])
+    main_dir = os.path.dirname(mzmls[0])
     for mzml in mzmls:
-        filter_scans(mzml, [ActivationType.ETD], [ActivationType.HCD])
+        hcd_dir = os.path.join(main_dir, 'HCD')
+        filter_scans(mzml, [ActivationType.HCD], hcd_dir)    # HCD only
+        # ethcd_dir = os.path.join(main_dir, 'EThcD')
+        # filter_scans(mzml, [ActivationType.HCD, ActivationType.ETD], ethcd_dir)    # EThcD only

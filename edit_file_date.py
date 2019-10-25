@@ -7,8 +7,8 @@ from tkinter import filedialog
 import os
 import shutil
 
-new_date = '2019_10_23'
-append = '4k'
+new_date = '2019_10_24'
+append = ''
 
 if __name__ == '__main__':
     root = tkinter.Tk()
@@ -18,6 +18,9 @@ if __name__ == '__main__':
     for file in files:
         filename = os.path.basename(file)
         splits = filename.split('_')
-        splits.insert(len(splits) - 1, append)
+        if append is not '':
+            splits.insert(len(splits) - 1, append)
         new_filename = '{}_{}'.format(new_date, '_'.join(splits[3:]))
+        # new_filename = '{}_{}'.format(new_date, '_'.join(splits))
+
         shutil.copy(file, os.path.join(os.path.dirname(file), new_filename))
