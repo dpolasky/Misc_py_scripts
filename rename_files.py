@@ -11,6 +11,25 @@ import shutil
 # append = ''
 
 
+def copy_rename_original_folder(file_list, output_folder):
+    """
+    Copy a set of files to a single directory, renaming each with the name of its original containing folder.
+    Intended for (e.g.) a group of psm.tsv (or etc) files that want to end up in the same place for combined analysis
+    :param file_list: list of files
+    :param output_folder: where to save all outputs
+    :return: void
+    """
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    for index, file in enumerate(file_list):
+        orig_folder = os.path.basename(os.path.dirname(file))
+        new_name = '{}_{}'.format(orig_folder, os.path.basename(file))
+        new_path = os.path.join(output_folder, new_name)
+        print('copying file {} of {}...'.format(index + 1, len(file_list)))
+        shutil.copy(file, new_path)
+
+
 def rename_add_activation(file_list, activation, skip=None):
     """
     Add activation string to end of files
@@ -56,9 +75,13 @@ if __name__ == '__main__':
     root.withdraw()
 
     files = filedialog.askopenfilenames()
+
+    new_dir = filedialog.askdirectory()
+    copy_rename_original_folder(files, new_dir)
+
     # copy_rename_date(files, new_date='2019_09_25', filename_append='')
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
 
     # rename_add_activation(files, 'HCD', skip='AIETD')
-    rename_add_activation(files, 'AIETD', skip='HCD')
+    # rename_add_activation(files, 'AIETD', skip='HCD')
