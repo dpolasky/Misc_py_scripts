@@ -76,10 +76,10 @@ if __name__ == '__main__':
 
     files = filedialog.askopenfilenames()
 
-    new_dir = filedialog.askdirectory()
-    copy_rename_original_folder(files, new_dir)
+    # new_dir = filedialog.askdirectory()
+    # copy_rename_original_folder(files, new_dir)
 
-    # copy_rename_date(files, new_date='2019_09_25', filename_append='')
+    copy_rename_date(files, new_date='', filename_append='')
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
 
