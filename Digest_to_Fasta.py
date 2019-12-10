@@ -53,10 +53,14 @@ def digest_custom_manual(fasta_file, res_to_cut, max_missed_cleavages, min_lengt
     :type fasta_file: str
     :param max_missed_cleavages: max allowed, will gen up to this
     :type max_missed_cleavages: int
+    :param res_to_cut: list of residues at which to cleave
+    :type res_to_cut: list
     :param min_length: min peptide length output
     :type min_length: int
     :param max_length: max output length
     :type max_length: int
+    :param c_term: whether to cut C-terminal to specified residues or Nterminal
+    :type c_term: bool
     :return: dict of peptide: protein descriptions containing it
     :rtype: dict
     """
@@ -73,6 +77,7 @@ def digest_custom_manual(fasta_file, res_to_cut, max_missed_cleavages, min_lengt
                 output_fasta_dict[peptide].append(protein_descript)
             else:
                 output_fasta_dict[peptide] = [protein_descript]
+    print_counts(output_fasta_dict)
     return output_fasta_dict
 
 
@@ -101,6 +106,18 @@ def digest_fasta_trypsin(fasta_file, min_length, max_length):
                 output_fasta_dict[peptide] = [protein_descript]
             # output_fasta_tups.append((protein_descript, peptide))
     # print counts for diagnostics
+    print_counts(output_fasta_dict)
+    return output_fasta_dict
+
+
+def print_counts(output_fasta_dict):
+    """
+    Print counts of multi-protein peptides for diagnostics
+    :param output_fasta_dict:
+    :type output_fasta_dict:
+    :return:
+    :rtype:
+    """
     print('total peptides = {}'.format(len(output_fasta_dict.keys())))
     print('total unique peptides = {}'.format(len(set(output_fasta_dict.keys()))))
     counts = {x: 0 for x in range(5)}
@@ -111,7 +128,6 @@ def digest_fasta_trypsin(fasta_file, min_length, max_length):
         else:
             counts[5] += 1
     print(counts)
-    return output_fasta_dict
 
 
 def write_fasta(fasta_dict, output_path):
@@ -142,7 +158,7 @@ if __name__ == '__main__':
 
     for file in files:
         # fasta_info = digest_fasta_trypsin(file, min_length=7, max_length=60)
-        fasta_info = digest_custom_manual(file, res_to_cut=['S', 'T'], max_missed_cleavages=5, min_length=7, max_length=60, c_term=False)
+        fasta_info = digest_custom_manual(file, res_to_cut=['S', 'T'], max_missed_cleavages=7, min_length=7, max_length=60, c_term=False)
         new_filename = os.path.splitext(file)[0] + '_digest.fasta'
         print('writing output')
         # fasta.write(fasta_info, output=new_filename)
