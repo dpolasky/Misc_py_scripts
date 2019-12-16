@@ -11,7 +11,7 @@ MASS_DICT = {'HexNAc': 203.07937,
              'Hex': 162.05282,
              'Fuc': 146.057909,
              'NeuAc': 291.0954,
-             'Phospho': 0
+             'Phospho': 79.96633
              }
 
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     # write_output(read_masses, read_glycans, outfilepath)
 
     # NOTE: b/c range, it goes to 1 less than specified (so use [0, 1] to ignore)
-    masses = gen_glyco_masses(hexnacs=[1, 7], hexes=[0, 11], fucs=[0, 6], neuacs=[0, 3], phosphos=[0, 1])
+    masses = gen_glyco_masses(hexnacs=[1, 7], hexes=[0, 9], fucs=[0, 5], neuacs=[0, 2], phosphos=[0, 1])
     root.clipboard_clear()
     outputs = []
     outputs.append('Name,Mass\n')
