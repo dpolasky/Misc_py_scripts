@@ -11,7 +11,12 @@ MASS_DICT = {'HexNAc': 203.07937,
              'Hex': 162.05282,
              'Fuc': 146.057909,
              'NeuAc': 291.0954,
-             'Phospho': 79.96633
+             'Phospho': 79.96633,
+             'NeuGc': 307.0903,
+             'Pent': 132.0423,
+             'Sulfo': 79.9568,
+             'KDN': 250.0689,
+             'HexA': 176.03209
              }
 
 
@@ -143,6 +148,41 @@ def gen_glyco_masses(hexnacs, hexes, fucs, neuacs, phosphos):
     #     both_parts = combo[0] + combo[1]
 
 
+def gen_glyco_masses_dict(mass_range_dict):
+    """
+    Generate all combiations of provided masses
+    :param mass_range_dict: dict of component name: [min, max]
+    :type mass_range_dict: dict
+    :return: list of (name, mass) of all combinations
+    :rtype: list
+    """
+    inputs = []
+    for name, minmax in mass_range_dict.items():
+        # generate all input strings of 'name_number' for all numbers in range
+        this_input = []
+        if minmax[1] == 0:
+            continue
+        current_num = minmax[0]
+        while current_num < minmax[1]:
+            this_input.append('{}_{}'.format(name, current_num))
+            current_num += 1
+        if len(this_input) > 0:
+            inputs.append(this_input)
+
+    # now make all products and compute mass
+    all_outputs = []
+    for combination in itertools.product(*inputs):
+        # decode mass
+        mass = 0
+        name_items = []
+        for glycan_string in combination:
+            name_items.append(glycan_string)
+            splits = glycan_string.split('_')
+            mass += int(splits[1]) * MASS_DICT[splits[0]]
+        all_outputs.append((','.join(name_items), mass))
+    return all_outputs
+
+
 if __name__ == '__main__':
     root = tkinter.Tk()
     root.withdraw()
@@ -153,7 +193,21 @@ if __name__ == '__main__':
     # write_output(read_masses, read_glycans, outfilepath)
 
     # NOTE: b/c range, it goes to 1 less than specified (so use [0, 1] to ignore)
-    masses = gen_glyco_masses(hexnacs=[1, 7], hexes=[0, 9], fucs=[0, 5], neuacs=[0, 2], phosphos=[0, 1])
+    # masses = gen_glyco_masses(hexnacs=[1, 7], hexes=[0, 9], fucs=[0, 5], neuacs=[0, 2], phosphos=[0, 1])
+    # masses = gen_glyco_masses(hexnacs=[1, 9], hexes=[0, 12], fucs=[0, 3], neuacs=[0, 3], phosphos=[0, 2])
+    # masses = gen_glyco_masses(hexnacs=[1, 9], hexes=[0, 12], fucs=[0, 3], neuacs=[0, 3], phosphos=[0, 2])
+    massdict = {'HexNAc': [0, 12],
+                'Hex': [0, 14],
+                'Fuc': [0, 4],
+                'NeuAc': [0, 4],
+                'Phospho': [0, 4],
+                'NeuGc': [0, 4],
+                'Pent': [0, 4],
+                'Sulfo': [0, 0],
+                'KDN': [0, 0],
+                'HexA': [0, 0]
+                }
+    masses = gen_glyco_masses_dict(massdict)
     root.clipboard_clear()
     outputs = []
     outputs.append('Name,Mass\n')
