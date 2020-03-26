@@ -18,6 +18,7 @@ MASS_DICT = {'HexNAc': 203.07937,
              'KDN': 250.0689,
              'HexA': 176.03209
              }
+APPLY_HEURISTIC_FILTERS = False
 
 
 def glycan_text_to_mass(input_file):
@@ -175,10 +176,29 @@ def gen_glyco_masses_dict(mass_range_dict):
         # decode mass
         mass = 0
         name_items = []
+
+        # heuristics/rules
+        hexnacs = 0
+        hexes = 0
+        others = 0
         for glycan_string in combination:
             name_items.append(glycan_string)
             splits = glycan_string.split('_')
-            mass += int(splits[1]) * MASS_DICT[splits[0]]
+            num = int(splits[1])
+            name = splits[0]
+            mass += num * MASS_DICT[name]
+            if name == 'HexNAc':
+                hexnacs = num
+            elif name == 'Hex':
+                hexes = num
+            else:
+                others += num
+        if APPLY_HEURISTIC_FILTERS:
+            # apply heuristics
+            if hexnacs > hexes + 2:
+                continue
+            if others > 3:
+                continue
         all_outputs.append((','.join(name_items), mass))
     return all_outputs
 
@@ -196,13 +216,13 @@ if __name__ == '__main__':
     # masses = gen_glyco_masses(hexnacs=[1, 7], hexes=[0, 9], fucs=[0, 5], neuacs=[0, 2], phosphos=[0, 1])
     # masses = gen_glyco_masses(hexnacs=[1, 9], hexes=[0, 12], fucs=[0, 3], neuacs=[0, 3], phosphos=[0, 2])
     # masses = gen_glyco_masses(hexnacs=[1, 9], hexes=[0, 12], fucs=[0, 3], neuacs=[0, 3], phosphos=[0, 2])
-    massdict = {'HexNAc': [0, 12],
-                'Hex': [0, 14],
-                'Fuc': [0, 4],
-                'NeuAc': [0, 4],
-                'Phospho': [0, 4],
-                'NeuGc': [0, 4],
-                'Pent': [0, 4],
+    massdict = {'HexNAc': [0, 9],
+                'Hex': [0, 11],
+                'Fuc': [0, 5],
+                'NeuAc': [0, 5],
+                'Phospho': [0, 3],
+                'NeuGc': [0, 5],
+                'Pent': [0, 0],
                 'Sulfo': [0, 0],
                 'KDN': [0, 0],
                 'HexA': [0, 0]

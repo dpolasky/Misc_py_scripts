@@ -7,7 +7,7 @@ from tkinter import filedialog
 import os
 import shutil
 
-# new_date = '2019_10_25'
+NEW_DATE = '2020_03_23_TimsToF'
 # append = ''
 
 
@@ -79,7 +79,9 @@ if __name__ == '__main__':
     # new_dir = filedialog.askdirectory()
     # copy_rename_original_folder(files, new_dir)
 
-    copy_rename_date(files, new_date='', filename_append='')
+    # copy_rename_date(files, new_date='', filename_append='')
+    copy_rename_date(files, new_date=NEW_DATE, filename_append='')
+
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
 
