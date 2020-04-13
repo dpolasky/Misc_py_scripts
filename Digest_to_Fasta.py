@@ -166,8 +166,9 @@ if __name__ == '__main__':
     maindir = os.path.dirname(files[0])
 
     for file in files:
-        # fasta_info = digest_fasta_trypsin(file, min_length=7, max_length=60)
-        fasta_info = digest_custom_manual(file, res_to_cut=['S', 'T'], max_missed_cleavages=100, min_length=7, max_length=1000, c_term=False)
+        fasta_info = digest_fasta_trypsin(file, min_length=7, max_length=60)
+        # fasta_info = digest_custom_manual(file, res_to_cut=['S', 'T'], max_missed_cleavages=100, min_length=7, max_length=1000, c_term=False)
+
         new_filename = os.path.splitext(file)[0] + '_digest.fasta'
         print('writing output')
         # fasta.write(fasta_info, output=new_filename)
