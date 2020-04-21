@@ -55,7 +55,12 @@ def filter_scans(mzml_file, exact_activation_list, output_dir):
                             all_found = False
                     if all_found:
                         filtered_spectra.append(spectrum)
+                    else:
+                        print('not all found for spec {}'.format(index))
+                # else:
+                #     print('wrong length for spec {}'.format(index))
 
+    print('{} spectra before, now {} spectra'.format(index + 1, len(filtered_spectra)))
     exp.setSpectra(filtered_spectra)
 
     output_file = os.path.join(output_dir, os.path.basename(mzml_file))

@@ -9,6 +9,19 @@ import shutil
 
 NEW_DATE = '2020_03_23_TimsToF'
 # append = ''
+REMOVE = ['#']
+
+
+def remove_chars(filename, chars_to_remove):
+    """
+    Remove specified characters from the filename
+    :param filename: string
+    :type filename: str
+    :param chars_to_remove: things to remove
+    :type chars_to_remove: list
+    :return: void
+    :rtype:
+    """
 
 
 def copy_rename_original_folder(file_list, output_folder):
@@ -51,23 +64,38 @@ def rename_add_activation(file_list, activation, skip=None):
         os.rename(file, new_filename)
 
 
-def copy_rename_date(file_list, new_date, filename_append):
+def copy_rename_date(file_list, new_date, filename_append, remove_chars, in_place=False):
     """
     Rename date based on naming convention of y_m_d_filename. Creates a copy of the files
     :param file_list: list of paths
     :param new_date: new date string
     :param filename_append: str
+    :param remove_chars: if provided (list), remove these chars from filename
+    :param in_place: if true, rename rather than copy
     :return: void
     """
     for file in file_list:
         filename = os.path.basename(file)
         splits = filename.split('_')
+        # insert
         if filename_append is not '':
             splits.insert(len(splits) - 1, filename_append)
-        new_filename = '{}_{}'.format(new_date, '_'.join(splits[3:]))
-        # new_filename = '{}_{}'.format(new_date, '_'.join(splits))
 
-        shutil.copy(file, os.path.join(os.path.dirname(file), new_filename))
+        # change date
+        if new_date is not '':
+            new_filename = '{}_{}'.format(new_date, '_'.join(splits[3:]))
+            # new_filename = '{}_{}'.format(new_date, '_'.join(splits))
+        else:
+            new_filename = filename
+
+        # remove chars
+        for char in remove_chars:
+            new_filename = new_filename.replace(char, '')
+
+        if in_place:
+            os.rename(file, os.path.join(os.path.dirname(file), new_filename))
+        else:
+            shutil.copy(file, os.path.join(os.path.dirname(file), new_filename))
 
 
 if __name__ == '__main__':
@@ -80,7 +108,8 @@ if __name__ == '__main__':
     # copy_rename_original_folder(files, new_dir)
 
     # copy_rename_date(files, new_date='', filename_append='')
-    copy_rename_date(files, new_date=NEW_DATE, filename_append='')
+    # copy_rename_date(files, new_date=NEW_DATE, filename_append='', remove_chars=REMOVE)
+    copy_rename_date(files, new_date='', filename_append='', remove_chars=REMOVE, in_place=True)
 
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
