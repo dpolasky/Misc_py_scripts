@@ -7,9 +7,104 @@ from tkinter import filedialog
 import os
 import shutil
 
-NEW_DATE = '2020_03_23_TimsToF'
-# append = ''
+NEW_DATE = '2020_08_18'
+append = 'node1'
 REMOVE = ['#']
+
+FPOP_DICT = {
+    '1pAZ_Control_second_L1': '1pAZ_Control_BR1_L1',
+    '1pAZ_Control_second_L2': '1pAZ_Control_BR1_L2',
+    '1pAZ_Control_second_L3': '1pAZ_Control_BR1_L3',
+    '1pAZ_Control_second_NL1': '1pAZ_Control_BR1_NL1',
+    '1pAZ_Control_second_NL2': '1pAZ_Control_BR1_NL2',
+    '1pAZ_Control_second_NL3': '1pAZ_Control_BR1_NL3',
+    '1pAZ_Control_second_W1': '1pAZ_Control_BR1_W1',
+    '1pAZ_Control_second_W2': '1pAZ_Control_BR1_W2',
+    '1pAZ_Control_second_W3': '1pAZ_Control_BR1_W3',
+    '1pAZ_second_L1': '1pAZ_sample_BR1_L1',
+    '1pAZ_second_L2': '1pAZ_sample_BR1_L2',
+    '1pAZ_second_L3': '1pAZ_sample_BR1_L3',
+    '1pAZ_second_NL1': '1pAZ_sample_BR1_NL1',
+    '1pAZ_second_NL2': '1pAZ_sample_BR1_NL2',
+    '1pAZ_second_NL3': '1pAZ_sample_BR1_NL3',
+    '1pAZ_second_W1': '1pAZ_sample_BR1_W1',
+    '1pAZ_second_W2': '1pAZ_sample_BR1_W2',
+    '1pAZ_second_W3': '1pAZ_sample_BR1_W3',
+    'CPE_1pAZBR2_L1': '1pAZ_sample_BR2_L1',
+    'CPE_1pAZBR2_L2': '1pAZ_sample_BR2_L2',
+    'CPE_1pAZBR2_L3': '1pAZ_sample_BR2_L3',
+    'CPE_1pAZBR2_NL1': '1pAZ_sample_BR2_NL1',
+    'CPE_1pAZBR2_NL2': '1pAZ_sample_BR2_NL2',
+    'CPE_1pAZBR2_NL3': '1pAZ_sample_BR2_NL3',
+    'CPE_1pAZBR2_W1': '1pAZ_sample_BR2_W1',
+    'CPE_1pAZBR2_W2': '1pAZ_sample_BR2_W2',
+    'CPE_1pAZBR2_W3': '1pAZ_sample_BR2_W3',
+    'CPE_ControlBR2_L1': '1pAZ_control_BR2_L1',
+    'CPE_ControlBR2_L2': '1pAZ_control_BR2_L2',
+    'CPE_ControlBR2_L3': '1pAZ_control_BR2_L3',
+    'CPE_ControlBR2_NL1': '1pAZ_control_BR2_NL1',
+    'CPE_ControlBR2_NL2': '1pAZ_control_BR2_NL2',
+    'CPE_ControlBR2_NL3': '1pAZ_control_BR2_NL3',
+    'CPE_ControlBR2_W1': '1pAZ_control_BR2_W1',
+    'CPE_ControlBR2_W2': '1pAZ_control_BR2_W2',
+    'CPE_ControlBR2_W3-2nd': '1pAZ_control_BR2_W3',
+    'CN_05AZnOA_BR1': '2CPE_control_BR1_L1',
+    'CN_05AZnOA_BR1_L2': '2CPE_control_BR1_L2',
+    'CN_05AZnOA_BR1_L3': '2CPE_control_BR1_L3',
+    'CN_05AZnOA_BR1_NL1': '2CPE_control_BR1_NL1',
+    'CN_05AZnOA_BR1_NL2': '2CPE_control_BR1_NL2',
+    'CN_05AZnOA_BR1_NL3': '2CPE_control_BR1_NL3',
+    'CN_05AZnOA_BR1_W1_20190824182203': '2CPE_control_BR1_W1',
+    'CN_05AZnOA_BR1_W2': '2CPE_control_BR1_W2',
+    'CN_05AZnOA_BR1_W3': '2CPE_control_BR1_W3',
+    'CPE_05AZnOA_BR1_L1': '2CPE_sample_BR1_L1',
+    'CPE_05AZnOA_BR1_L2': '2CPE_sample_BR1_L2',
+    'CPE_05AZnOA_BR1_L3': '2CPE_sample_BR1_L3',
+    'CPE_05AZnOA_BR1_NL1': '2CPE_sample_BR1_NL1',
+    'CPE_05AZnOA_BR1_NL2': '2CPE_sample_BR1_NL2',
+    'CPE_05AZnOA_BR1_NL3': '2CPE_sample_BR1_NL3',
+    'CPE_05AZnOA_BR1_W1': '2CPE_sample_BR1_W1',
+    'CPE_05AZnOA_BR1_W2': '2CPE_sample_BR1_W2',
+    'CPE_05AZnOA_BR1_W3': '2CPE_sample_BR1_W3',
+    '2CPEs_BR2_L1': '2CPE_sample_BR2_L1',
+    '2CPEs_BR2_L2': '2CPE_sample_BR2_L2',
+    '2CPEs_BR2_L3': '2CPE_sample_BR2_L3',
+    '2CPEs_BR2_NL1': '2CPE_sample_BR2_NL1',
+    '2CPEs_BR2_NL2': '2CPE_sample_BR2_NL2',
+    '2CPEs_BR2_NL3': '2CPE_sample_BR2_NL3',
+    '2CPEs_BR2_W1': '2CPE_sample_BR2_W1',
+    '2CPEs_BR2_W2': '2CPE_sample_BR2_W2',
+    '2CPEs_BR2_W3': '2CPE_sample_BR2_W3',
+    '2CPEsControl_BR2_L1': '2CPE_control_BR2_L1',
+    '2CPEsControl_BR2_L2': '2CPE_control_BR2_L2',
+    '2CPEsControl_BR2_L3': '2CPE_control_BR2_L3',
+    '2CPEsControl_BR2_NL1': '2CPE_control_BR2_NL1',
+    '2CPEsControl_BR2_NL2': '2CPE_control_BR2_NL2',
+    '2CPEsControl_BR2_NL3': '2CPE_control_BR2_NL3',
+    '2CPEsControl_BR2_W1': '2CPE_control_BR2_W1',
+    '2CPEsControl_BR2_W2': '2CPE_control_BR2_W2',
+    '2CPEsControl_BR2_W3': '2CPE_control_BR2_W3',
+}
+
+
+def rename_from_dict(file_list, names_dict):
+    """
+    Rename a list of files from a provided dict of old name: new name.
+    :param file_list: list of files to rename
+    :type file_list: list
+    :param names_dict: dict of old name: new name
+    :type names_dict: dict
+    :return: void
+    :rtype:
+    """
+    for file in file_list:
+        old_base = os.path.splitext(os.path.basename(file))[0]
+        if old_base in names_dict:
+            # include directory and file extenstion in new name
+            new_name = os.path.join(os.path.dirname(file), names_dict[old_base]) + os.path.splitext(file)[1]
+            os.rename(file, new_name)
+        else:
+            print('no match found for file {}'.format(file))
 
 
 def remove_chars(filename, chars_to_remove):
@@ -83,8 +178,8 @@ def copy_rename_date(file_list, new_date, filename_append, remove_chars, in_plac
 
         # change date
         if new_date is not '':
-            new_filename = '{}_{}'.format(new_date, '_'.join(splits[3:]))
-            # new_filename = '{}_{}'.format(new_date, '_'.join(splits))
+            # new_filename = '{}_{}'.format(new_date, '_'.join(splits[3:]))
+            new_filename = '{}_{}'.format(new_date, '_'.join(splits))
         else:
             new_filename = filename
 
@@ -109,10 +204,12 @@ if __name__ == '__main__':
 
     # copy_rename_date(files, new_date='', filename_append='')
     # copy_rename_date(files, new_date=NEW_DATE, filename_append='', remove_chars=REMOVE)
-    copy_rename_date(files, new_date='', filename_append='', remove_chars=REMOVE, in_place=True)
+    copy_rename_date(files, new_date=NEW_DATE, filename_append=append, remove_chars=REMOVE, in_place=True)
 
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
 
     # rename_add_activation(files, 'HCD', skip='AIETD')
     # rename_add_activation(files, 'AIETD', skip='HCD')
+
+    # rename_from_dict(files, FPOP_DICT)
