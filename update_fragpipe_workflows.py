@@ -8,21 +8,24 @@ updated files can then be saved to the github repo.
 import os
 import shutil
 
-WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build\classes\java\workflows"
-REPO_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows"
+# WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build\classes\java\workflows"
+WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build\install\fragpipe\workflows"
+REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
+             r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
+
 REQUIRED_STRING = 'glyco'
 EDIT_EXISTING_DEFAULTS = False   # if true, edit files with no spaces as well as with spaces
 # EDIT_EXISTING_DEFAULTS = True   # if true, edit files with no spaces as well as with spaces
 
 
-def main(edit_dir, save_dir, required_string, edit_existing_defaults):
+def main(edit_dir, save_dir_list, required_string, edit_existing_defaults):
     """
     Edit filenames in the edit_dir, then save them to the repo dir. Overwrite existing files of same name in
     each case. Filenames must have required_string to be edited
     :param edit_dir: dir path with files to edit
     :type edit_dir: str
-    :param save_dir: dir path to save output
-    :type save_dir: str
+    :param save_dir_list: list of dir paths in which to save output
+    :type save_dir_list: list
     :param required_string: string that must be in filename to edit
     :type required_string: str
     :param edit_existing_defaults: if true, edit files with no spaces as well as with spaces
@@ -52,8 +55,9 @@ def main(edit_dir, save_dir, required_string, edit_existing_defaults):
 
     # copy to final dir
     for file in filepaths_to_copy:
-        savepath = os.path.join(save_dir, os.path.basename(file))
-        shutil.copy(file, savepath)
+        for save_dir in save_dir_list:
+            savepath = os.path.join(save_dir, os.path.basename(file))
+            shutil.copy(file, savepath)
 
 
 def edit_fileheader(workflow_file, new_filename_str):
@@ -84,4 +88,4 @@ def edit_fileheader(workflow_file, new_filename_str):
 
 
 if __name__ == '__main__':
-    main(WORKFLOW_DIR, REPO_DIR, REQUIRED_STRING, EDIT_EXISTING_DEFAULTS)
+    main(WORKFLOW_DIR, REPO_DIRS, REQUIRED_STRING, EDIT_EXISTING_DEFAULTS)
