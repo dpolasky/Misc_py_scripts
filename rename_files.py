@@ -7,9 +7,13 @@ from tkinter import filedialog
 import os
 import shutil
 
-NEW_DATE = '2020_08_18'
-append = 'node1'
+NEW_DATE = '2020_10_06'
+REMOVE_OLD_DATE = True
+# append = 'node1'
+append = ''
 REMOVE = ['#']
+
+REPLACE = {'AI-ETD': 'AIETD'}
 
 FPOP_DICT = {
     '1pAZ_Control_second_L1': '1pAZ_Control_BR1_L1',
@@ -178,8 +182,10 @@ def copy_rename_date(file_list, new_date, filename_append, remove_chars, in_plac
 
         # change date
         if new_date is not '':
-            # new_filename = '{}_{}'.format(new_date, '_'.join(splits[3:]))
-            new_filename = '{}_{}'.format(new_date, '_'.join(splits))
+            if REMOVE_OLD_DATE:
+                new_filename = '{}_{}'.format(new_date, '_'.join(splits[3:]))
+            else:
+                new_filename = '{}_{}'.format(new_date, '_'.join(splits))
         else:
             new_filename = filename
 
@@ -193,6 +199,25 @@ def copy_rename_date(file_list, new_date, filename_append, remove_chars, in_plac
             shutil.copy(file, os.path.join(os.path.dirname(file), new_filename))
 
 
+def rename_replace_chars(file_list, replace_dict):
+    """
+    Replace any instances of keys in the replace dict with values
+    :param file_list: list of file paths
+    :type file_list: list
+    :param replace_dict: dict of bad string: replacement string
+    :type replace_dict: dict
+    :return: void - renames in place
+    :rtype:
+    """
+    for file in file_list:
+        filename = os.path.basename(file)
+        new_filename = filename
+        for old_str, new_str in replace_dict.items():
+            if old_str in filename:
+                new_filename = new_filename.replace(old_str, new_str)
+        os.rename(file, os.path.join(os.path.dirname(file), new_filename))
+
+
 if __name__ == '__main__':
     root = tkinter.Tk()
     root.withdraw()
@@ -204,7 +229,7 @@ if __name__ == '__main__':
 
     # copy_rename_date(files, new_date='', filename_append='')
     # copy_rename_date(files, new_date=NEW_DATE, filename_append='', remove_chars=REMOVE)
-    copy_rename_date(files, new_date=NEW_DATE, filename_append=append, remove_chars=REMOVE, in_place=True)
+    # copy_rename_date(files, new_date=NEW_DATE, filename_append=append, remove_chars=REMOVE, in_place=True)
 
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
@@ -213,3 +238,5 @@ if __name__ == '__main__':
     # rename_add_activation(files, 'AIETD', skip='HCD')
 
     # rename_from_dict(files, FPOP_DICT)
+    rename_replace_chars(files, REPLACE)
+
