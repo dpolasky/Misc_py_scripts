@@ -7,11 +7,11 @@ from tkinter import filedialog
 import os
 import shutil
 
-NEW_DATE = '2020_10_06'
+NEW_DATE = '2020_10_19-Criscuolo'
 REMOVE_OLD_DATE = True
 # append = 'node1'
 append = ''
-REMOVE = ['#']
+REMOVE = ['#', ',', ' ']
 
 REPLACE = {'AI-ETD': 'AIETD'}
 
@@ -111,18 +111,6 @@ def rename_from_dict(file_list, names_dict):
             print('no match found for file {}'.format(file))
 
 
-def remove_chars(filename, chars_to_remove):
-    """
-    Remove specified characters from the filename
-    :param filename: string
-    :type filename: str
-    :param chars_to_remove: things to remove
-    :type chars_to_remove: list
-    :return: void
-    :rtype:
-    """
-
-
 def copy_rename_original_folder(file_list, output_folder):
     """
     Copy a set of files to a single directory, renaming each with the name of its original containing folder.
@@ -218,6 +206,24 @@ def rename_replace_chars(file_list, replace_dict):
         os.rename(file, os.path.join(os.path.dirname(file), new_filename))
 
 
+def remove_chars_only(file_list, remove_char_list):
+    """
+    remove chars from filename
+    :param file_list: list of files
+    :type file_list: list
+    :param remove_char_list: list of strings to remove
+    :type remove_char_list: list
+    :return: void
+    :rtype:
+    """
+    for file in file_list:
+        # remove chars
+        filename = os.path.basename(file)
+        for char in remove_char_list:
+            filename = filename.replace(char, '')
+        os.rename(file, os.path.join(os.path.dirname(file), filename))
+
+
 if __name__ == '__main__':
     root = tkinter.Tk()
     root.withdraw()
@@ -229,7 +235,7 @@ if __name__ == '__main__':
 
     # copy_rename_date(files, new_date='', filename_append='')
     # copy_rename_date(files, new_date=NEW_DATE, filename_append='', remove_chars=REMOVE)
-    # copy_rename_date(files, new_date=NEW_DATE, filename_append=append, remove_chars=REMOVE, in_place=True)
+    copy_rename_date(files, new_date=NEW_DATE, filename_append=append, remove_chars=REMOVE, in_place=True)
 
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
@@ -237,6 +243,8 @@ if __name__ == '__main__':
     # rename_add_activation(files, 'HCD', skip='AIETD')
     # rename_add_activation(files, 'AIETD', skip='HCD')
 
+    # remove_chars_only(files, REMOVE)
+
     # rename_from_dict(files, FPOP_DICT)
-    rename_replace_chars(files, REPLACE)
+    # rename_replace_chars(files, REPLACE)
 
