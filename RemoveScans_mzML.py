@@ -77,6 +77,6 @@ if __name__ == '__main__':
     main_dir = os.path.dirname(mzmls[0])
     for mzml in mzmls:
         hcd_dir = os.path.join(main_dir, 'HCD')
-        filter_scans(mzml, [ActivationType.HCD], hcd_dir)    # HCD only
+        filter_scans(mzml, [ActivationType.HCD], hcd_dir)    # keep HCD only (e.g. do on 'HCD' output of EThcD conversion to remove EThcD scans from the HCD file)
         # ethcd_dir = os.path.join(main_dir, 'EThcD')
         # filter_scans(mzml, [ActivationType.HCD, ActivationType.ETD], ethcd_dir)    # EThcD only
