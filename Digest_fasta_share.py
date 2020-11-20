@@ -6,8 +6,15 @@ search multiple enzymes with very different numbers of missed cleavages (for exa
 import tkinter
 from tkinter import filedialog
 import os
-from pyteomics import fasta, parser
+from pyteomics import fasta
 import time
+
+
+MAX_MISSED_CLEAVAGES = 10
+MIN_PEPTIDE_LENGTH = 7
+MAX_PEPTIDE_LENGTH = 1000
+CUT_AT = ['S', 'T']
+CLEAVE_CTERM_TO_X = False
 
 
 def do_digest(seq, res_to_cut_list, max_missed_cleavages, cut_cterm=True):
@@ -82,35 +89,6 @@ def digest_custom_manual(fasta_file, res_to_cut, max_missed_cleavages, min_lengt
     return output_fasta_dict
 
 
-def digest_fasta_trypsin(fasta_file, min_length, max_length):
-    """
-    do digestion of file using trypsin rules (can add more as needed). Currently NOT removing duplicate peptides
-    :param fasta_file: file to read
-    :param min_length: min length of digested seq
-    :param max_length: max length of digested seq
-    :return: list of (description, sequence) tuples to write to fasta
-    """
-    output_fasta_dict = {}
-    index = 0
-    for protein_descript, protein_seq in fasta.read(fasta_file):
-        if index % 10000 == 0:
-            print('digested seq {}...'.format(index))
-        index += 1
-        # digest this protein using parser.cleave and filter by min and max length
-        new_peptides = parser.cleave(protein_seq, parser.expasy_rules['trypsin'], missed_cleavages=2, min_length=min_length)
-        new_peptides = [x for x in new_peptides if len(x) <= max_length]
-        # save to output fasta list - all peptides have the same protein description but digested sequence
-        for peptide in new_peptides:
-            if peptide in output_fasta_dict.keys():
-                output_fasta_dict[peptide].append(protein_descript)
-            else:
-                output_fasta_dict[peptide] = [protein_descript]
-            # output_fasta_tups.append((protein_descript, peptide))
-    # print counts for diagnostics
-    print_counts(output_fasta_dict)
-    return output_fasta_dict
-
-
 def print_counts(output_fasta_dict):
     """
     Print counts of multi-protein peptides for diagnostics
@@ -165,11 +143,12 @@ if __name__ == '__main__':
     maindir = os.path.dirname(files[0])
 
     for file in files:
-        # fasta_info = digest_fasta_trypsin(file, min_length=7, max_length=60)
-        fasta_info = digest_custom_manual(file, res_to_cut=['S', 'T'], max_missed_cleavages=11, min_length=7, max_length=1000, c_term=False)
-
+        fasta_info = digest_custom_manual(file, res_to_cut=CUT_AT,
+                                          max_missed_cleavages=MAX_MISSED_CLEAVAGES,
+                                          min_length=MIN_PEPTIDE_LENGTH,
+                                          max_length=MAX_PEPTIDE_LENGTH,
+                                          c_term=CLEAVE_CTERM_TO_X)
         new_filename = os.path.splitext(file)[0] + '_digest.fasta'
         print('writing output')
-        # fasta.write(fasta_info, output=new_filename)
         write_fasta(fasta_info, new_filename)
     print('done')
