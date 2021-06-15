@@ -8,9 +8,10 @@ import os
 import shutil
 
 NEW_DATE = '2020_10_19-Criscuolo'
-REMOVE_OLD_DATE = True
-# append = 'node1'
-append = ''
+# REMOVE_OLD_DATE = True
+REMOVE_OLD_DATE = False
+append = '_HCD'
+# append = ''
 REMOVE = ['#', ',', ' ']
 
 REPLACE = {'AI-ETD': 'AIETD'}
@@ -235,13 +236,13 @@ if __name__ == '__main__':
 
     # copy_rename_date(files, new_date='', filename_append='')
     # copy_rename_date(files, new_date=NEW_DATE, filename_append='', remove_chars=REMOVE)
-    copy_rename_date(files, new_date=NEW_DATE, filename_append=append, remove_chars=REMOVE, in_place=True)
+    # copy_rename_date(files, new_date=NEW_DATE, filename_append=append, remove_chars=REMOVE, in_place=True)
 
     # mydir = filedialog.askdirectory()
     # files = [x for x in os.listdir(mydir)]
 
     # rename_add_activation(files, 'HCD', skip='AIETD')
-    # rename_add_activation(files, 'AIETD', skip='HCD')
+    rename_add_activation(files, 'ETciD')
 
     # remove_chars_only(files, REMOVE)
 

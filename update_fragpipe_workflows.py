@@ -3,6 +3,7 @@ helper script for updating Fragpipe workflow names since we can't save as defaul
 Given a starting folder, takes all names with a space in them, removes the space and anything
 after it, and saves over any existing files with the resulting truncated name. Those
 updated files can then be saved to the github repo.
+TO USE: Save new workflow settings with a space (and whatever else) at the end of the filename, then run
 """
 
 import os
@@ -13,12 +14,12 @@ WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-G
 REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
              r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
 
-REQUIRED_STRING = 'glyco'
+REQUIRED_STRINGS = ['glyco', 'Labile']
 EDIT_EXISTING_DEFAULTS = False   # if true, edit files with no spaces as well as with spaces
 # EDIT_EXISTING_DEFAULTS = True   # if true, edit files with no spaces as well as with spaces
 
 
-def main(edit_dir, save_dir_list, required_string, edit_existing_defaults):
+def main(edit_dir, save_dir_list, required_strings, edit_existing_defaults):
     """
     Edit filenames in the edit_dir, then save them to the repo dir. Overwrite existing files of same name in
     each case. Filenames must have required_string to be edited
@@ -26,8 +27,8 @@ def main(edit_dir, save_dir_list, required_string, edit_existing_defaults):
     :type edit_dir: str
     :param save_dir_list: list of dir paths in which to save output
     :type save_dir_list: list
-    :param required_string: string that must be in filename to edit
-    :type required_string: str
+    :param required_strings: lsit of possible strings that must be in filename to edit
+    :type required_strings: list
     :param edit_existing_defaults: if true, edit files with no spaces as well as with spaces
     :type edit_existing_defaults: bool
     :return: void
@@ -36,22 +37,25 @@ def main(edit_dir, save_dir_list, required_string, edit_existing_defaults):
     init_files = [x for x in os.listdir(edit_dir) if x.endswith('.workflow')]
     filepaths_to_copy = []
     for file in init_files:
-        if required_string in file:
-            # edit file and save
-            splits = os.path.splitext(file)[0].split(' ')
-            if not edit_existing_defaults:
-                if len(splits) == 1:
-                    # this is not an update file (either a default or has already been overwritten)
-                    continue
-            new_filename = os.path.join(edit_dir, splits[0] + os.path.splitext(file)[1])
+        for required_string in required_strings:
+            if required_string in file:
+                # edit file and save
+                splits = os.path.splitext(file)[0].split(' ')
+                if not edit_existing_defaults:
+                    if len(splits) == 1:
+                        # this is not an update file (either a default or has already been overwritten)
+                        continue
+                new_filename = os.path.join(edit_dir, splits[0] + os.path.splitext(file)[1])
+                print('copying workflow {}'.format(new_filename))
 
-            # edit the file to change the saved filename comment at the top
-            stripped_filename = os.path.splitext(os.path.basename(new_filename))[0]
-            edit_fileheader(os.path.join(edit_dir, file), stripped_filename)
+                # edit the file to change the saved filename comment at the top
+                stripped_filename = os.path.splitext(os.path.basename(new_filename))[0]
+                edit_fileheader(os.path.join(edit_dir, file), stripped_filename)
 
-            # move the file
-            shutil.move(os.path.join(edit_dir, file), new_filename)
-            filepaths_to_copy.append(new_filename)
+                # move the file
+                shutil.move(os.path.join(edit_dir, file), new_filename)
+                filepaths_to_copy.append(new_filename)
+                break
 
     # copy to final dir
     for file in filepaths_to_copy:
@@ -88,4 +92,4 @@ def edit_fileheader(workflow_file, new_filename_str):
 
 
 if __name__ == '__main__':
-    main(WORKFLOW_DIR, REPO_DIRS, REQUIRED_STRING, EDIT_EXISTING_DEFAULTS)
+    main(WORKFLOW_DIR, REPO_DIRS, REQUIRED_STRINGS, EDIT_EXISTING_DEFAULTS)
