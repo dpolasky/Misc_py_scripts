@@ -8,6 +8,9 @@ import os
 import shutil
 
 NEW_DATE = '2020_10_19-Criscuolo'
+PTMS_DATE = '0909'
+PTMS_VERSION = '1.2.3'
+
 # REMOVE_OLD_DATE = True
 REMOVE_OLD_DATE = False
 append = '_HCD'
@@ -90,6 +93,30 @@ FPOP_DICT = {
     '2CPEsControl_BR2_W2': '2CPE_control_BR2_W2',
     '2CPEsControl_BR2_W3': '2CPE_control_BR2_W3',
 }
+
+
+def rename_ptms_configs(file_list, new_date, new_version=''):
+    """
+    Rename a set of PTM-S config files with new date and (optional) PTMS version. PTMS files assumed to be named
+    according to convention: shp_[version]_[date]_rest-of-name.config
+    :param file_list: list of files to rename
+    :type file_list: list
+    :param new_date: string
+    :type new_date: str
+    :param new_version: string
+    :type new_version: str
+    :return: void
+    :rtype:
+    """
+    for file in file_list:
+        filename = os.path.splitext(os.path.basename(file))[0]
+        extension = os.path.splitext(file)[1]
+        splits = filename.split('_')
+        if new_version is not '':
+            splits[1] = new_version
+        splits[2] = new_date
+        new_filename = os.path.join(os.path.dirname(file), '_'.join(splits)) + extension
+        shutil.copy(file, new_filename)
 
 
 def rename_from_dict(file_list, names_dict):
@@ -242,10 +269,12 @@ if __name__ == '__main__':
     # files = [x for x in os.listdir(mydir)]
 
     # rename_add_activation(files, 'HCD', skip='AIETD')
-    rename_add_activation(files, 'ETciD')
+    # rename_add_activation(files, 'ETciD')
 
     # remove_chars_only(files, REMOVE)
 
     # rename_from_dict(files, FPOP_DICT)
     # rename_replace_chars(files, REPLACE)
+
+    rename_ptms_configs(files, PTMS_DATE, PTMS_VERSION)
 
