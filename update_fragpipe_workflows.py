@@ -83,6 +83,12 @@ def edit_fileheader(workflow_file, new_filename_str):
                 splits = line.split(':')
                 newline = '{}: {}\n'.format(splits[0], new_filename_str)
                 output.append(newline)
+            elif line.startswith("# Please"):
+                continue
+            elif line.startswith('# In Windows'):
+                continue
+            elif line.startswith('database.db-path'):
+                continue
             else:
                 output.append(line)
 
