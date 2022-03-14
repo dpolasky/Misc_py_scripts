@@ -8,8 +8,11 @@ import os
 import shutil
 
 NEW_DATE = '2020_10_19-Criscuolo'
-PTMS_DATE = '0909'
-PTMS_VERSION = '1.2.3'
+PTMS_DATE = '1008'
+PTMS_VERSION = '1.2.5'
+
+KEEP_LIST = ['brain', 'heart', 'liver', 'kidney', 'lung']
+NEW_NAME = 'peptide-ion_fig5-mouse'
 
 # REMOVE_OLD_DATE = True
 REMOVE_OLD_DATE = False
@@ -252,6 +255,25 @@ def remove_chars_only(file_list, remove_char_list):
         os.rename(file, os.path.join(os.path.dirname(file), filename))
 
 
+def remove_all_except_keep_list(file_list, keep_list, new_name):
+    """
+    Completely replace the entire filename except for the items in the keep list
+    :param file_list: list of files to rename
+    :type file_list: list
+    :param keep_list: list of specific strings to keep in the name
+    :type keep_list: list
+    :return: void
+    :rtype:
+    """
+    for file in file_list:
+        for keep_str in keep_list:
+            # only rename the one with this specific name from the keep list on this iteration
+            if keep_str in os.path.basename(file.lower()):
+                new_filename = '{}_{}{}'.format(new_name, keep_str, os.path.splitext(file)[1])
+                new_path = os.path.join(os.path.dirname(file), new_filename)
+                os.rename(file, new_path)
+
+
 if __name__ == '__main__':
     root = tkinter.Tk()
     root.withdraw()
@@ -276,5 +298,5 @@ if __name__ == '__main__':
     # rename_from_dict(files, FPOP_DICT)
     # rename_replace_chars(files, REPLACE)
 
-    rename_ptms_configs(files, PTMS_DATE, PTMS_VERSION)
-
+    # rename_ptms_configs(files, PTMS_DATE, PTMS_VERSION)
+    remove_all_except_keep_list(files, KEEP_LIST, NEW_NAME)
