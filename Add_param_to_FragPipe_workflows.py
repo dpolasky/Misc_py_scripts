@@ -6,7 +6,8 @@ import os
 
 REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
              r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
-NEW_PARAMS = {'msfragger': ['activation_types=all']}       # dict of tool name: [param = value]. NO SPACES around '='
+# NEW_PARAMS = {'msfragger': ['activation_types=all']}       # dict of tool name: [param = value]. NO SPACES around '='
+NEW_PARAMS = {'ptmshepherd': ['remove_glycan_delta_mass=true']}       # dict of tool name: [param = value]. NO SPACES around '='
 
 
 def main(repo_dirs, new_param_dict):
