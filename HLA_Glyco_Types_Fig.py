@@ -13,6 +13,7 @@ GLYCAN_QVAL_COL = 'Glycan q-value'
 PEP_COL = 'Peptide'
 PROT_COL = 'Protein'
 GLYC_QVAL_THR = 0.05
+LRP1 = 'sp|Q07954|LRP1_HUMAN'
 
 
 class GlycanResidue(Enum):
@@ -121,7 +122,7 @@ def determine_glycan_type(glycan_str):
     return glyc_type.value
 
 
-def glycan_type_compare(psm_df_dict, q_val_threshold, output_dir):
+def glycan_type_compare(psm_df_dict, q_val_threshold, output_dir, protein=''):
     """
     Plot bar graph of glycan types for each input psm table
     :param psm_df_dict: dict of analysis name: psm table (as dataframe)
@@ -137,6 +138,8 @@ def glycan_type_compare(psm_df_dict, q_val_threshold, output_dir):
     for analysis_name, df in psm_df_dict.items():
         glycan_types[analysis_name] = {}
         filtered_df = df.loc[(df[GLYCAN_QVAL_COL] <= q_val_threshold)]
+        if protein is not '':
+            filtered_df = filtered_df.loc[filtered_df[PROT_COL] == protein]
         filtered_df['Glyc Type'] = filtered_df[GLYCAN_COL].apply(determine_glycan_type)
         type_counts = filtered_df['Glyc Type'].value_counts()
         for glycan_type in GlycanType:
@@ -146,7 +149,10 @@ def glycan_type_compare(psm_df_dict, q_val_threshold, output_dir):
                 glycan_types[analysis_name][glycan_type] = 0
 
     # save results
-    output_path = os.path.join(output_dir, '_glycan-compare.tsv')
+    if protein is not '':
+        output_path = os.path.join(output_dir, '_glycan-compare-{}.tsv'.format(protein.split('|')[-1]))
+    else:
+        output_path = os.path.join(output_dir, '_glycan-compare.tsv')
     with open(output_path, 'w') as outfile:
         outfile.write('Analysis\t{}\n'.format('\t'.join([x.value for x in GlycanType])))
         for analysis_name, type_dict in glycan_types.items():
@@ -167,6 +173,7 @@ def main(analysis_dirs):
 
     mass_compare(df_dict, GLYC_QVAL_THR, output_dir)
     glycan_type_compare(df_dict, GLYC_QVAL_THR, output_dir)
+    glycan_type_compare(df_dict, GLYC_QVAL_THR, output_dir, LRP1)
 
 
 if __name__ == '__main__':
