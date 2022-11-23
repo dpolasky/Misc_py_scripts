@@ -7,7 +7,18 @@ import os
 REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
              r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
 # NEW_PARAMS = {'msfragger': ['activation_types=all']}       # dict of tool name: [param = value]. NO SPACES around '='
-NEW_PARAMS = {'ptmshepherd': ['remove_glycan_delta_mass=true']}       # dict of tool name: [param = value]. NO SPACES around '='
+# NEW_PARAMS = {'ptmshepherd': ['remove_glycan_delta_mass=true']}       # dict of tool name: [param = value]. NO SPACES around '='
+NEW_PARAMS = {'opair': ['activation1=HCD',
+                        'activation2=ETD',
+                        'glyco_db=',
+                        'max_glycans=4',
+                        'max_isotope_error=2',
+                        'min_isotope_error=0',
+                        'ms1_tol=20',
+                        'ms2_tol=20',
+                        'reverse_scan_order=false',
+                        'run-opair=false',
+                        'single_scan_type=false']}
 
 
 def main(repo_dirs, new_param_dict):
@@ -80,12 +91,27 @@ def edit_params(file, new_param_dict):
     """
     output = []
     current_file_copy = {k: [x for x in v] for k, v in new_param_dict.items()}      # deep copy
+    tools_found = []
     with open(file, 'r') as readfile:
         for line in list(readfile):
             skip_append = False
             if '.' in line:
                 # tool-specific line
                 tool_splits = line.split('.', 1)
+                tools_found.append(tool_splits[0])
+
+                # check for adding totally new tool (find insert point)
+                for tool_name in current_file_copy.keys():
+                    if tool_name not in tools_found:
+                        if tool_name < tools_found[-1]:
+                            # if we've reached another tool that's alphabetically after this tool, need to insert it above this line
+                            new_param_list = [x for x in current_file_copy[tool_name]]
+                            for new_param in new_param_list:
+                                newline = '{}.{}\n'.format(tool_name, new_param)
+                                # remove from insert list when done
+                                current_file_copy[tool_name].remove(new_param)
+                                output.append(newline)
+
                 if tool_splits[0] in current_file_copy.keys():
                     # check for possible insert point
                     for new_param in current_file_copy[tool_splits[0]]:
