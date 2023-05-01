@@ -8,10 +8,14 @@ import re
 import math
 
 FASTA = r"E:\_Software_Tests\glyco_combinatorics\FourMucins_NoSigPeps_FASTA.fasta"
+# FASTA = r"E:\_Software_Tests\glyco_combinatorics\2019-08-22-td-rev-NODECOY-UP000005640.fas"
 NUM_GLYCS = 12
 ENZYME = 'trypsin'
 MISSED_CLEAVAGE = 2
-#SEMI_ENZ = False
+SEMI_ENZ = True
+# SEMI_ENZ = False
+MIN_PEP_LEN = 7
+MAX_PEP_LEN = 50
 
 
 def main(fasta_file):
@@ -27,8 +31,10 @@ def main(fasta_file):
     # digest proteins
     for id_tuple in id_tuple_iterator:
         seq = id_tuple[1]
-        unique_peps = parser.cleave(seq, ENZYME, MISSED_CLEAVAGE)
-        all_peps.update(unique_peps)
+        unique_peps = parser.cleave(seq, ENZYME, MISSED_CLEAVAGE, semi=SEMI_ENZ)
+        for pep in unique_peps:
+            if MIN_PEP_LEN <= len(pep) <= MAX_PEP_LEN:
+                all_peps.add(pep)
 
     # compute modified peptides
     glycoform_dict = {}
@@ -41,6 +47,7 @@ def main(fasta_file):
 
     # count total forms
     total = 0
+    # total_peps = 0
     for site_count, pep_list in sorted(glycoform_dict.items(), key=lambda x: x[0]):
         num_peps = len(pep_list)
         if site_count == 0:
@@ -48,8 +55,10 @@ def main(fasta_file):
         else:
             forms_per_pep = combinations_with_replacement(NUM_GLYCS, site_count)
         new_forms = forms_per_pep * num_peps
+        # new_forms_peptfirst = num_peps
         total += new_forms
-        print('{} sites: {} peps, {} forms/pep, {} forms, {} total'.format(site_count, num_peps, forms_per_pep, new_forms, total))
+        # total_pepfirst += new_forms_peptfirst
+        print('{} sites: {} peps,\t{} forms/pep,\t{:.2E} forms,\t{:.3E}\ttotal'.format(site_count, num_peps, forms_per_pep, new_forms, total))
 
 
 def combinations_with_replacement(n, r):
