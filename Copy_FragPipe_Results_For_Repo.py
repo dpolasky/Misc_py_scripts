@@ -6,16 +6,19 @@ upload using a template file.
 import os
 import shutil
 
-TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Labile_PTMs\_Processed-data-for-submission\_revision1\Filecopy_template.csv"
+# TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Labile_PTMs\_Processed-data-for-submission\_revision1\Filecopy_template.csv"
+TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Georges_HLA-atlas\Filecopy_template.csv"
+
 MANIFEST_NAME = 'fragpipe-files.fp-manifest'
-FILES_TO_COPY = ['fragpipe.workflow',
-                 MANIFEST_NAME,
-                 'protein.fas',
-                 'ion.tsv',
-                 'peptide.tsv',
-                 'protein.tsv',
-                 'psm.tsv'
-                 ]
+FILES_TO_COPY = [
+    # 'fragpipe.workflow',
+    # MANIFEST_NAME,
+    # 'protein.fas',
+    # 'ion.tsv',
+    'peptide.tsv',
+    'protein.tsv',
+    'psm.tsv'
+]
 
 
 def copy_results(template_path, files_list):
@@ -61,9 +64,9 @@ def copy_results(template_path, files_list):
                 for filename in files_list:
                     shutil.copy(os.path.join(source_dir, filename), os.path.join(destination_dir, filename))
 
-
             # edit manifest file
-            edit_manifest(destination_dir)
+            if MANIFEST_NAME in FILES_TO_COPY:
+                edit_manifest(destination_dir)
 
 
 def edit_manifest(directory):

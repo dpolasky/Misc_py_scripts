@@ -7,13 +7,13 @@ from pyteomics import fasta, parser
 import re
 import math
 
-FASTA = r"E:\_Software_Tests\glyco_combinatorics\FourMucins_NoSigPeps_FASTA.fasta"
-# FASTA = r"E:\_Software_Tests\glyco_combinatorics\2019-08-22-td-rev-NODECOY-UP000005640.fas"
-NUM_GLYCS = 12
+# FASTA = r"E:\_Software_Tests\glyco_combinatorics\FourMucins_NoSigPeps_FASTA.fasta"
+FASTA = r"E:\_Software_Tests\glyco_combinatorics\2019-08-22-td-rev-NODECOY-UP000005640.fas"
+NUM_GLYCS = 2
 ENZYME = 'trypsin'
 MISSED_CLEAVAGE = 2
-SEMI_ENZ = True
-# SEMI_ENZ = False
+# SEMI_ENZ = True
+SEMI_ENZ = False
 MIN_PEP_LEN = 7
 MAX_PEP_LEN = 50
 
@@ -47,9 +47,10 @@ def main(fasta_file):
 
     # count total forms
     total = 0
-    # total_peps = 0
+    total_peps = 0
     for site_count, pep_list in sorted(glycoform_dict.items(), key=lambda x: x[0]):
         num_peps = len(pep_list)
+        total_peps += num_peps
         if site_count == 0:
             forms_per_pep = 1   # only 1 form per peptide if no sites
         else:
@@ -58,7 +59,7 @@ def main(fasta_file):
         # new_forms_peptfirst = num_peps
         total += new_forms
         # total_pepfirst += new_forms_peptfirst
-        print('{} sites: {} peps,\t{} forms/pep,\t{:.2E} forms,\t{:.3E}\ttotal'.format(site_count, num_peps, forms_per_pep, new_forms, total))
+        print('{} sites: {} peps,\t{} total peps,\t{} forms/pep,\t{:.2E} forms,\t{:.3E}\ttotal'.format(site_count, num_peps, total_peps, forms_per_pep, new_forms, total))
 
 
 def combinations_with_replacement(n, r):
