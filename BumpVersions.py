@@ -46,7 +46,7 @@ def bump_versions(tool_list):
                 output = []
                 with open(file, 'r') as readfile:
                     for line in list(readfile):
-                        if 'version = ' in line:
+                        if line.startswith('version = '):
                             splits = line.split('=')
                             prev_detected_version = splits[1].replace('\'', '')
                             build_splits = prev_detected_version.split('build')
