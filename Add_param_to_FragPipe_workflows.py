@@ -6,19 +6,41 @@ import os
 
 REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
              r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
+NEW_BUILD_VERSION = '20.1-build8'
 # NEW_PARAMS = {'msfragger': ['activation_types=all']}       # dict of tool name: [param = value]. NO SPACES around '='
 # NEW_PARAMS = {'ptmshepherd': ['remove_glycan_delta_mass=true']}       # dict of tool name: [param = value]. NO SPACES around '='
-NEW_PARAMS = {'opair': ['activation1=HCD',
-                        'activation2=ETD',
-                        'glyco_db=',
-                        'max_glycans=4',
-                        'max_isotope_error=2',
-                        'min_isotope_error=0',
-                        'ms1_tol=20',
-                        'ms2_tol=20',
-                        'reverse_scan_order=false',
-                        'run-opair=false',
-                        'single_scan_type=false']}
+NEW_PARAMS = {
+    'fpop': [
+        'fpop-tmt=false',
+        'label_control=',
+        'label_fpop=',
+        'region_size=1',
+        'run-fpop=false',
+        'subtract-control=false'
+    ],
+    'msfragger': ['output_report_topN_wwa=5'],
+    'tmtintegrator': ['abn_type=0'],
+    'workflow': ['misc.save-sdrf=true']
+}
+# 'ptmshepherd':
+#     ['prob_dhexOx=2,0.5,0.1',
+#      'prob_dhexY=2,0.5',
+#      'prob_neuacOx=2,0.05,0.2',
+#      'prob_neugcOx=2,0.05,0.2',
+#      'prob_phosphoOx=2,0.05,0.2',
+#      'prob_regY=5,0.5',
+#      'prob_sulfoOx=2,0.05,0.2']}
+# NEW_PARAMS = {'opair': ['activation1=HCD',
+#                         'activation2=ETD',
+#                         'glyco_db=',
+#                         'max_glycans=4',
+#                         'max_isotope_error=2',
+#                         'min_isotope_error=0',
+#                         'ms1_tol=20',
+#                         'ms2_tol=20',
+#                         'reverse_scan_order=false',
+#                         'run-opair=false',
+#                         'single_scan_type=false']}
 
 
 def main(repo_dirs, new_param_dict):
@@ -90,7 +112,7 @@ def edit_params(file, new_param_dict):
     :rtype:
     """
     output = []
-    current_file_copy = {k: [x for x in v] for k, v in new_param_dict.items()}      # deep copy
+    current_file_copy = {k: [x for x in v] for k, v in new_param_dict.items()}  # deep copy
     tools_found = []
     with open(file, 'r') as readfile:
         for line in list(readfile):
@@ -127,6 +149,10 @@ def edit_params(file, new_param_dict):
                             # remove from insert list when done
                             current_file_copy[tool_splits[0]].remove(new_param)
                             output.append(newline)
+                if 'saved-with-ver' in line:
+                    newline = line.split('=')[0] + '=' + NEW_BUILD_VERSION
+                    output.append(newline)
+                    skip_append = True
             if not skip_append:
                 output.append(line)
 

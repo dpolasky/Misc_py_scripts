@@ -14,7 +14,7 @@ WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-G
 REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
              r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
 
-REQUIRED_STRINGS = ['glyco', 'Labile']
+REQUIRED_STRINGS = ['glyco', 'Labile', 'FPOP']
 EDIT_EXISTING_DEFAULTS = False   # if true, edit files with no spaces as well as with spaces
 # EDIT_EXISTING_DEFAULTS = True   # if true, edit files with no spaces as well as with spaces
 
