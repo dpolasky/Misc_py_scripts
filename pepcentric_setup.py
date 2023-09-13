@@ -10,21 +10,21 @@ import pathlib
 # DESTINATION = r"Z:\yufe\pepcentric\production\dataset"
 COPY_FOLDER = "/storage/data/HLA/Purcell_2021_PXD025877"
 DESTINATION = "/storage/yufe/pepcentric/production/dataset"
-# FOLDERS = ["/storage/data/HLA/Racle_2019_PXD012308"]
-FOLDERS = ["/storage/data/HLA/Bassani_2021_PXD020079",
-           "/storage/data/HLA/Chong_2018_PXD006939",
-           "/storage/data/HLA/Chong_2020_PXD013649",
-           "/storage/data/HLA/Gerlinger_2019_PXD014017",
-           "/storage/data/HLA/Gfeller_2018_PXD009925",
-           "/storage/data/HLA/Neidert_2021_PXD019643",
-           "/storage/data/HLA/Neidert_2021_PXD020186",
-           "/storage/data/HLA/Pandey_2020_PXD015039",
-           "/storage/data/HLA/Purcell_2021_PXD025877",
-           # "/storage/data/HLA/Racle_2019_PXD012308",
-           "/storage/data/HLA/2016_Bassani_PXD004894",
-           "/storage/data/HLA/2019_Bassani_PXD013831",
-           "/storage/data/HLA/Bassani_2015_PXD000394",
-           ]
+FOLDERS = ["/storage/data/HLA/Neidert_2021_PXD019643"]
+# FOLDERS = ["/storage/data/HLA/Bassani_2021_PXD020079",
+#            "/storage/data/HLA/Chong_2018_PXD006939",
+#            "/storage/data/HLA/Chong_2020_PXD013649",
+#            "/storage/data/HLA/Gerlinger_2019_PXD014017",
+#            "/storage/data/HLA/Gfeller_2018_PXD009925",
+#            "/storage/data/HLA/Neidert_2021_PXD019643",
+#            "/storage/data/HLA/Neidert_2021_PXD020186",
+#            "/storage/data/HLA/Pandey_2020_PXD015039",
+#            "/storage/data/HLA/Purcell_2021_PXD025877",
+#            "/storage/data/HLA/Racle_2019_PXD012308",
+#            "/storage/data/HLA/2016_Bassani_PXD004894",
+#            "/storage/data/HLA/2019_Bassani_PXD013831",
+#            "/storage/data/HLA/Bassani_2015_PXD000394",
+#            ]
 
 
 def main(folders):
@@ -62,8 +62,9 @@ def single_folder(copy_folder):
         os.makedirs(destination_pxd / 'mzBIN')
 
     mzml_files = [e.resolve() for e in copy_folder.glob('*.mzML')]
+    c1path = copy_folder / 'class-I'
     print('got {} mzmls in folder {}'.format(len(mzml_files), copy_folder))
-    if len(mzml_files) == 0:
+    if len(mzml_files) == 0 or os.path.exists(c1path):
         c1path = copy_folder / 'class-I'
         c2path = copy_folder / 'class-II'
         class1 = [e.resolve() for e in c1path.glob('*.mzML')]
