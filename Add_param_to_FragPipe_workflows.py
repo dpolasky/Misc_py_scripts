@@ -6,22 +6,25 @@ import os
 
 REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
              r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
-NEW_BUILD_VERSION = '20.1-build8'
-# NEW_PARAMS = {'msfragger': ['activation_types=all']}       # dict of tool name: [param = value]. NO SPACES around '='
+NEW_BUILD_VERSION = '20.1-build20'
+NEW_PARAMS = {'msfragger': ['mass_offsets_detailed=',
+                            'use_detailed_offsets=false']}       # dict of tool name: [param = value]. NO SPACES around '='
+REMOVE_PARAMS = ['msfragger.mass_offset_file']          # list of full param names to remove
+
 # NEW_PARAMS = {'ptmshepherd': ['remove_glycan_delta_mass=true']}       # dict of tool name: [param = value]. NO SPACES around '='
-NEW_PARAMS = {
-    'fpop': [
-        'fpop-tmt=false',
-        'label_control=',
-        'label_fpop=',
-        'region_size=1',
-        'run-fpop=false',
-        'subtract-control=false'
-    ],
-    'msfragger': ['output_report_topN_wwa=5'],
-    'tmtintegrator': ['abn_type=0'],
-    'workflow': ['misc.save-sdrf=true']
-}
+# NEW_PARAMS = {
+#     'fpop': [
+#         'fpop-tmt=false',
+#         'label_control=',
+#         'label_fpop=',
+#         'region_size=1',
+#         'run-fpop=false',
+#         'subtract-control=false'
+#     ],
+#     'msfragger': ['output_report_topN_wwa=5'],
+#     'tmtintegrator': ['abn_type=0'],
+#     'workflow': ['misc.save-sdrf=true']
+# }
 # 'ptmshepherd':
 #     ['prob_dhexOx=2,0.5,0.1',
 #      'prob_dhexY=2,0.5',
@@ -43,7 +46,7 @@ NEW_PARAMS = {
 #                         'single_scan_type=false']}
 
 
-def main(repo_dirs, new_param_dict):
+def main(repo_dirs, new_param_dict, remove_param_list):
     """
     Edit filenames in the edit_dir, then save them to the repo dir. Overwrite existing files of same name in
     each case. Filenames must have required_string to be edited
@@ -51,6 +54,7 @@ def main(repo_dirs, new_param_dict):
     :type repo_dirs: list
     :param new_param_dict: dict of tool name: [param = value]
     :type new_param_dict: dict
+    :param remove_param_list: list of params to remove
     :return: void
     :rtype:
     """
@@ -60,7 +64,7 @@ def main(repo_dirs, new_param_dict):
         for file in init_files:
             # edit file and save
             print('editing workflow {}'.format(file))
-            edit_params(file, new_param_dict)
+            edit_params(file, new_param_dict, remove_param_list)
 
 
 # def edit_params(file, new_param_dict):
@@ -101,13 +105,14 @@ def main(repo_dirs, new_param_dict):
 #             writefile.write(line)
 
 
-def edit_params(file, new_param_dict):
+def edit_params(file, new_param_dict, remove_param_list):
     """
 
     :param file: file to edit
     :type file: str
     :param new_param_dict: dict of tool name: [param = value]
     :type new_param_dict: dict
+    :param remove_param_list: params to remove
     :return: void
     :rtype:
     """
@@ -121,6 +126,11 @@ def edit_params(file, new_param_dict):
                 # tool-specific line
                 tool_splits = line.split('.', 1)
                 tools_found.append(tool_splits[0])
+
+                # check for params to remove
+                param_splits = line.split('=')
+                if param_splits[0] in remove_param_list:
+                    skip_append = True
 
                 # check for adding totally new tool (find insert point)
                 for tool_name in current_file_copy.keys():
@@ -162,4 +172,4 @@ def edit_params(file, new_param_dict):
 
 
 if __name__ == '__main__':
-    main(REPO_DIRS, NEW_PARAMS)
+    main(REPO_DIRS, NEW_PARAMS, REMOVE_PARAMS)
