@@ -4,17 +4,19 @@ upload using a template file.
 """
 
 import os
+import pathlib
 import shutil
 
 # TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Labile_PTMs\_Processed-data-for-submission\_revision1\Filecopy_template.csv"
-TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Georges_HLA-atlas\Filecopy_template.csv"
+# TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Georges_HLA-atlas\Filecopy_template.csv"
+TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\OPair\Filecopy_template.csv"
 
 MANIFEST_NAME = 'fragpipe-files.fp-manifest'
 FILES_TO_COPY = [
-    # 'fragpipe.workflow',
-    # MANIFEST_NAME,
-    # 'protein.fas',
-    # 'ion.tsv',
+    'fragpipe.workflow',
+    MANIFEST_NAME,
+    'protein.fas',
+    'ion.tsv',
     'peptide.tsv',
     'protein.tsv',
     'psm.tsv'
@@ -39,34 +41,58 @@ def copy_results(template_path, files_list):
             splits = line.split(',')
             source_dir = splits[0]
 
+            copy_all_files = splits[1].lower() == 'true'
+
             # make destination dir
-            destination_dir = os.path.join(*splits[1:]).rstrip('\n')
+            destination_dir = os.path.join(*splits[2:]).rstrip('\n')
             if not os.path.exists(destination_dir):
                 os.makedirs(destination_dir)
 
-            # copy files
-            is_multi_experiment = not os.path.exists(os.path.join(source_dir, 'psm.tsv'))
-            if is_multi_experiment:
-                for filename in files_list[:2]:
-                    shutil.copy(os.path.join(source_dir, filename), os.path.join(destination_dir, filename))
-
-                # get all sub-directories and copy them with structure
-                subdirs = [os.path.join(source_dir, x) for x in os.listdir(source_dir) if os.path.isdir(os.path.join(source_dir, x))]
-                for sub_index, subdir in enumerate(subdirs):
-                    print('\tcopying sub-directory {} of {}'.format(sub_index + 1, len(subdirs)))
-                    subdir_destination = os.path.join(destination_dir, os.path.basename(subdir))
-                    if not os.path.exists(subdir_destination):
-                        os.makedirs(subdir_destination)
-                    for filename in files_list[2:]:
-                        shutil.copy(os.path.join(subdir, filename), os.path.join(subdir_destination, filename))
-
+            if not pathlib.Path.is_dir(pathlib.Path(source_dir)):
+                # results from other software that do not produce output folders. Simply copy the file to dest dir
+                shutil.copy(source_dir, os.path.join(destination_dir, os.path.basename(source_dir)))
             else:
-                for filename in files_list:
-                    shutil.copy(os.path.join(source_dir, filename), os.path.join(destination_dir, filename))
+                if copy_all_files:
+                    # ignore file list and copy all files (e.g., for non-FragPipe tools)
+                    for filename in [x for x in os.listdir(source_dir) if not os.path.isdir(os.path.join(source_dir, x))]:
+                        shutil.copy(os.path.join(source_dir, filename), os.path.join(destination_dir, filename))
+                    # get all sub-directories and copy them with structure
+                    subdirs = [os.path.join(source_dir, x) for x in os.listdir(source_dir) if os.path.isdir(os.path.join(source_dir, x))]
+                    for sub_index, subdir in enumerate(subdirs):
+                        print('\tcopying sub-directory {} of {}'.format(sub_index + 1, len(subdirs)))
+                        subdir_destination = os.path.join(destination_dir, os.path.basename(subdir))
+                        if not os.path.exists(subdir_destination):
+                            os.makedirs(subdir_destination)
+                        for filename in os.listdir(subdir):
+                            shutil.copy(os.path.join(subdir, filename), os.path.join(subdir_destination, filename))
+                else:
+                    # copy FragPipe files
+                    is_multi_experiment = not os.path.exists(os.path.join(source_dir, 'psm.tsv'))
+                    if is_multi_experiment:
+                        for filename in files_list[:2]:
+                            shutil.copy(os.path.join(source_dir, filename), os.path.join(destination_dir, filename))
 
-            # edit manifest file
-            if MANIFEST_NAME in FILES_TO_COPY:
-                edit_manifest(destination_dir)
+                        # get all sub-directories and copy them with structure
+                        subdirs = [os.path.join(source_dir, x) for x in os.listdir(source_dir) if os.path.isdir(os.path.join(source_dir, x))]
+                        for sub_index, subdir in enumerate(subdirs):
+                            print('\tcopying sub-directory {} of {}'.format(sub_index + 1, len(subdirs)))
+                            subdir_destination = os.path.join(destination_dir, os.path.basename(subdir))
+                            if not os.path.exists(subdir_destination):
+                                os.makedirs(subdir_destination)
+                            if 'tmt-report' in subdir:
+                                for filename in os.listdir(subdir):
+                                    shutil.copy(os.path.join(subdir, filename), os.path.join(subdir_destination, filename))
+                            else:
+                                for filename in files_list[2:]:
+                                    shutil.copy(os.path.join(subdir, filename), os.path.join(subdir_destination, filename))
+
+                    else:
+                        for filename in files_list:
+                            shutil.copy(os.path.join(source_dir, filename), os.path.join(destination_dir, filename))
+
+                    # edit manifest file
+                    if MANIFEST_NAME in FILES_TO_COPY:
+                        edit_manifest(destination_dir)
 
 
 def edit_manifest(directory):
