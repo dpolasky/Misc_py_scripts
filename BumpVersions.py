@@ -34,6 +34,8 @@ def bump_versions(tool_list):
                             prev_detected_version = splits[1]
                             build_splits = prev_detected_version.split('build')
                             new_build_num = int(build_splits[1]) + 1
+                            if new_build_num < 10 and '0' in build_splits[1]:
+                                new_build_num = '0{}'.format(new_build_num)
                             newline = splits[0] + '={}build{}\n'.format(build_splits[0], new_build_num)
                         else:
                             newline = line
@@ -51,6 +53,8 @@ def bump_versions(tool_list):
                             prev_detected_version = splits[1].replace('\'', '')
                             build_splits = prev_detected_version.split('build')
                             new_build_num = int(build_splits[1]) + 1
+                            if new_build_num < 10 and '0' in build_splits[1]:
+                                new_build_num = '0{}'.format(new_build_num)
                             newline = splits[0] + '= \'{}build{}\'\n'.format(build_splits[0].strip(), new_build_num)
                         else:
                             newline = line
