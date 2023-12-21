@@ -23,7 +23,13 @@ def get_version(fragpipe_path):
         for line in readfile:
             match = re.search(version_pattern, line)
             if match:
-                return match.group(1)
+                match1 = match.group(1)
+                match2 = match.group(2)
+                if match1 is not None:
+                    return match1
+                else:
+                    return match2
+    return None
 
 
 def main():
