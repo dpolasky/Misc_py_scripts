@@ -1,20 +1,20 @@
 """
 convenience script
 """
-
+import os
 import pathlib
 import re
 import shutil
 
 FRAGPIPE_REPO = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build\install\fragpipe"
-TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
+# TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
+TEST_DIR = r"Z:\dpolasky\tools\_FragPipes\a_current"
+SKIP_VERSION = True
 
 
 def get_version(fragpipe_path):
     """
     find the version
-    :param fragpipe_path:
-    :type fragpipe_path:
     :return:
     :rtype:
     """
@@ -39,8 +39,13 @@ def main():
     :rtype:
     """
     version = get_version(FRAGPIPE_REPO)
-    copy_path = pathlib.Path(TEST_DIR) / version
+    if SKIP_VERSION:
+        copy_path = pathlib.Path(TEST_DIR)
+    else:
+        copy_path = pathlib.Path(TEST_DIR) / version
     print('copying...')
+    if os.path.exists(copy_path):
+        shutil.rmtree(copy_path)
     shutil.copytree(FRAGPIPE_REPO, copy_path)
     print('done!')
 
