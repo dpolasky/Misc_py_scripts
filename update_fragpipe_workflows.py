@@ -87,8 +87,13 @@ def edit_fileheader(workflow_file, new_filename_str):
                 continue
             elif line.startswith('# In Windows'):
                 continue
+            # don't write database paths to the built-ins
             elif line.startswith('database.db-path'):
                 continue
+            elif line.startswith('opair.glyco_db'):
+                output.append('{}=\n'.format(line.split('=')[0]))
+            elif line.startswith('ptmshepherd.glycodatabase'):
+                output.append('{}=\n'.format(line.split('=')[0]))
             else:
                 output.append(line)
 
