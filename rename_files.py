@@ -98,6 +98,20 @@ FPOP_DICT = {
 }
 
 
+def rename_remove_msconvert_append(file_list):
+    """
+    remove weird extra filename pieces appended by MSConvert ("file-[weirdness].mzML")
+    :param file_list:
+    :type file_list:
+    :return:
+    :rtype:
+    """
+    for file in file_list:
+        splits = file.split('-')
+        new_filename = splits[0] + '.mzML'
+        os.rename(file, new_filename)
+
+
 def rename_ptms_configs(file_list, new_date, new_version=''):
     """
     Rename a set of PTM-S config files with new date and (optional) PTMS version. PTMS files assumed to be named
@@ -299,4 +313,5 @@ if __name__ == '__main__':
     # rename_replace_chars(files, REPLACE)
 
     # rename_ptms_configs(files, PTMS_DATE, PTMS_VERSION)
-    remove_all_except_keep_list(files, KEEP_LIST, NEW_NAME)
+    # remove_all_except_keep_list(files, KEEP_LIST, NEW_NAME)
+    rename_remove_msconvert_append(files)
