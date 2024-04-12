@@ -9,7 +9,8 @@ import shutil
 
 # TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Labile_PTMs\_Processed-data-for-submission\_revision1\Filecopy_template.csv"
 # TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Georges_HLA-atlas\Filecopy_template.csv"
-TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\OPair\Filecopy_template.csv"
+# TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\OPair\Filecopy_template.csv"
+TEMPLATE_PATH = r"E:\_Software_Tests\DIA\glycoDIA_HCD\Filecopy_template.csv"
 
 MANIFEST_NAME = 'fragpipe-files.fp-manifest'
 FILES_TO_COPY = [
@@ -19,7 +20,8 @@ FILES_TO_COPY = [
     'ion.tsv',
     'peptide.tsv',
     'protein.tsv',
-    'psm.tsv'
+    'psm.tsv',
+    'combined.prot.xml'
 ]
 
 
