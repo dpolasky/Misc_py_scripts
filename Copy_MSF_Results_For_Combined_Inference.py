@@ -10,11 +10,16 @@ import tkfilebrowser
 import os
 import shutil
 
-INPUT = [r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-02_all_closed-semi-highRes-phil",
-         r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-02_all_closed-semi-IM",
-         r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-02_all_closed-semi-lowRes-phil"
-         ]
-OUTPUT = r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-05_Combined-inference-phil"
+# INPUT = [r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-02_all_closed-semi-highRes-phil",
+#          r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-02_all_closed-semi-IM",
+#          r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-02_all_closed-semi-lowRes-phil"
+#          ]
+INPUT = [
+    r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-25_all_glyc60-semi-highRes",
+    r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-25_all_glyc60-semi-IM",
+    r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-25_all_glyc60-semi-lowRes"
+]
+OUTPUT = r"Z:\dpolasky\projects\Glyco\ABRF\Beer_full-dataset\__FraggerResults\2024-04-25_Combined-inference-phil"
 COPY_FILETYPE = ".pep.xml"
 
 

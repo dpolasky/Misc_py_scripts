@@ -6,7 +6,8 @@ import pathlib
 import re
 import shutil
 
-FRAGPIPE_REPO = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build\install\fragpipe"
+# FRAGPIPE_REPO = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build\install\fragpipe"
+FRAGPIPE_REPO = r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\build\install\fragpipe"
 TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
 SKIP_VERSION = False
 # TEST_DIR = r"Z:\dpolasky\tools\_FragPipes\a_current"
