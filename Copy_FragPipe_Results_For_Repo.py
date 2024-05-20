@@ -9,20 +9,23 @@ import shutil
 
 # TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Labile_PTMs\_Processed-data-for-submission\_revision1\Filecopy_template.csv"
 # TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\2022_Georges_HLA-atlas\Filecopy_template.csv"
-# TEMPLATE_PATH = r"\\corexfs.med.umich.edu\proteomics\dpolasky\manuscripts\OPair\Filecopy_template.csv"
-TEMPLATE_PATH = r"E:\_Software_Tests\DIA\glycoDIA_HCD\Filecopy_template.csv"
+TEMPLATE_PATH = r"Z:\dpolasky\manuscripts\2024_OPair\Filecopy_template.csv"
+# TEMPLATE_PATH = r"E:\_Software_Tests\DIA\glycoDIA_HCD\Filecopy_template.csv"
+
+OVERWRITE_EXISTING = False      # if true, delete previous files and recopy everything fresh
 
 MANIFEST_NAME = 'fragpipe-files.fp-manifest'
 FILES_TO_COPY = [
     'fragpipe.workflow',
     MANIFEST_NAME,
+    'combined.prot.xml',
     'protein.fas',
     'ion.tsv',
     'peptide.tsv',
     'protein.tsv',
     'psm.tsv',
-    'combined.prot.xml'
 ]
+NUM_NONEXPERIMENT_FILES = 3     # in multi-experiment FP results, workflow, manifest, and combined.prot.xml are in the outer folder; others are in inner folder(s)
 
 
 def copy_results(template_path, files_list):
@@ -47,8 +50,15 @@ def copy_results(template_path, files_list):
 
             # make destination dir
             destination_dir = os.path.join(*splits[2:]).rstrip('\n')
-            if not os.path.exists(destination_dir):
-                os.makedirs(destination_dir)
+
+            if os.path.exists(destination_dir):
+                # files previously copied. ignore or delete and re-copy depending on settings
+                if OVERWRITE_EXISTING:
+                    shutil.rmtree(destination_dir)
+                else:
+                    continue
+
+            os.makedirs(destination_dir)
 
             if not pathlib.Path.is_dir(pathlib.Path(source_dir)):
                 # results from other software that do not produce output folders. Simply copy the file to dest dir
@@ -71,7 +81,7 @@ def copy_results(template_path, files_list):
                     # copy FragPipe files
                     is_multi_experiment = not os.path.exists(os.path.join(source_dir, 'psm.tsv'))
                     if is_multi_experiment:
-                        for filename in files_list[:2]:
+                        for filename in files_list[:NUM_NONEXPERIMENT_FILES]:
                             shutil.copy(os.path.join(source_dir, filename), os.path.join(destination_dir, filename))
 
                         # get all sub-directories and copy them with structure
@@ -85,7 +95,7 @@ def copy_results(template_path, files_list):
                                 for filename in os.listdir(subdir):
                                     shutil.copy(os.path.join(subdir, filename), os.path.join(subdir_destination, filename))
                             else:
-                                for filename in files_list[2:]:
+                                for filename in files_list[NUM_NONEXPERIMENT_FILES:]:
                                     shutil.copy(os.path.join(subdir, filename), os.path.join(subdir_destination, filename))
 
                     else:
