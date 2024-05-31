@@ -10,12 +10,12 @@ import shutil
 FRAGPIPE_REPO = r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\build\install\fragpipe"
 MSFRAGGER_DIR = r"C:\Users\dpolasky\Repositories\MSFragger\target"
 
-# TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
-# SKIP_VERSION = False
-TEST_DIR = r"Z:\dpolasky\tools\_FragPipes\a_current"
-SKIP_VERSION = True
-# COPY_MSF_TOO = True
-COPY_MSF_TOO = False
+TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
+SKIP_VERSION = False
+# TEST_DIR = r"Z:\dpolasky\tools\_FragPipes\a_current"
+# SKIP_VERSION = True
+COPY_MSF_TOO = True
+# COPY_MSF_TOO = False
 TOOLS_DIR = r"Z:\dpolasky\tools"
 
 

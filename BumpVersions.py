@@ -8,12 +8,17 @@ WHICH_TOOLS = ['fragpipe']
 # WHICH_TOOLS = ['msfragger']
 
 
-FRAGPIPE_LOCS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\src\com\dmtavt\fragpipe\Bundle.properties",
-                 r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\src\umich\msfragger\gui\Bundle.properties",
-                 r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build.gradle"]
+# FRAGPIPE_LOCS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\src\com\dmtavt\fragpipe\Bundle.properties",
+#                  r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\src\umich\msfragger\gui\Bundle.properties",
+#                  r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build.gradle"]
+FRAGPIPE_LOCS = [r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\src\com\dmtavt\fragpipe\Bundle.properties",
+                 r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\src\umich\msfragger\gui\Bundle.properties",
+                 r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\build.gradle"]
 FRAGPIPE_STR = "build"
-PTMS_LOCS = [r"C:\Users\dpolasky\IdeaProjects\PTM-Shepherd\src\edu\umich\andykong\ptmshepherd\PTMShepherd.java",
-             r"C:\Users\dpolasky\IdeaProjects\PTM-Shepherd\build.gradle"]
+# PTMS_LOCS = [r"C:\Users\dpolasky\IdeaProjects\PTM-Shepherd\src\edu\umich\andykong\ptmshepherd\PTMShepherd.java",
+#              r"C:\Users\dpolasky\IdeaProjects\PTM-Shepherd\build.gradle"]
+PTMS_LOCS = [r"C:\Users\dpolasky\Repositories\PTM-Shepherd\src\edu\umich\andykong\ptmshepherd\PTMShepherd.java",
+             r"C:\Users\dpolasky\Repositories\PTM-Shepherd\build.gradle"]
 PTMS_STR = "rc"
 MSFRAGGER_LOCS = []
 MSFRAGGER_STR = "rc"
@@ -90,7 +95,7 @@ def bump_versions(tool_list, build_string):
                     if "String version = " in line:
                         splits = line.split('=')
                         new_build_num, build_splits = get_new_version_num(splits[1].replace('\'', ''), build_string)
-                        newline = splits[0] + '= \'{}{}{}\'\n'.format(build_splits[0].strip(), build_string, new_build_num)
+                        newline = splits[0] + '= \"{}{}{}\"\n'.format(build_splits[0].strip(), build_string, new_build_num)
                     else:
                         newline = line
                     output.append(newline)
