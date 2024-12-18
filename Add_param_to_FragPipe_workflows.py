@@ -4,12 +4,20 @@ rather than adding specified values of a param (done manually in the GUI) to spe
 """
 import os
 
-REPO_DIRS = [r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\resources\workflows",
-             r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\workflows"]
-NEW_BUILD_VERSION = '20.1-build20'
-NEW_PARAMS = {'msfragger': ['mass_offsets_detailed=',
-                            'use_detailed_offsets=false']}       # dict of tool name: [param = value]. NO SPACES around '='
-REMOVE_PARAMS = ['msfragger.mass_offset_file']          # list of full param names to remove
+REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\workflows",
+             r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\src\resources\workflows"]
+
+NEW_BUILD_VERSION = '23.0-build7'
+
+# dict of tool name: [param = value]. NO SPACES around '='
+# NEW_PARAMS = {'fpop': ['coadaptr.fpop.run-fpop-coadaptr=false',
+#                        'coadaptr.fpop.fpop_masses=']
+#               }
+NEW_PARAMS = {}
+
+# REMOVE_PARAMS = ['msfragger.mass_offset_file']          # list of full param names to remove
+REMOVE_PARAMS = ['speclibgen.easypqp.ignore_unannotated']
+# REMOVE_PARAMS = []
 
 # NEW_PARAMS = {'ptmshepherd': ['remove_glycan_delta_mass=true']}       # dict of tool name: [param = value]. NO SPACES around '='
 # NEW_PARAMS = {
