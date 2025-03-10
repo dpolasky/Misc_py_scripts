@@ -102,12 +102,7 @@ def main():
         copy_path = pathlib.Path(TEST_DIR) / version
 
     start = time.time()
-    if os.path.exists(copy_path):
-        print('removing old fragpipe at {}'.format(copy_path))
-        shutil.rmtree(copy_path)
-        print('deleted in {:.1f}s'.format(time.time() - start))
-
-    # print('copying...')
+    print('copying...')
     # shutil.copytree(fragpipe_dir_path, copy_path, copy_function=shutil.copy2)
 
     # zip
@@ -123,6 +118,13 @@ def main():
     zip_copy_path = str(copy_path) + '.zip'
     shutil.copy2(zip_path, zip_copy_path)
     print('copied in {:.1f}s'.format(time.time() - temp))
+
+    # NOTE: do NOT delete if copying from zip, because it will instead delete the parent folder...
+    # temp = time.time()
+    # if os.path.exists(zip_copy_path):
+    #     print('removing old fragpipe at {}'.format(copy_path))
+    #     shutil.rmtree(copy_path)
+    #     print('deleted in {:.1f}s'.format(time.time() - temp))
 
     # unzip
     temp = time.time()
