@@ -9,10 +9,10 @@ TO USE: Save new workflow settings with a space (and whatever else) at the end o
 import os
 import shutil
 
-# WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\MSFragger-GUI\build\classes\java\workflows"
-WORKFLOW_DIR = r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\build\install\fragpipe\workflows"
-REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\src\resources\workflows",
-             r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\workflows"]
+# WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\FragPipe-GUI\build\classes\java\workflows"
+WORKFLOW_DIR = r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\build\install\fragpipe\workflows"
+REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\resources\workflows",
+             r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\workflows"]
 
 REQUIRED_STRINGS = ['glyco', 'Labile', 'FPOP']
 EDIT_EXISTING_DEFAULTS = False   # if true, edit files with no spaces as well as with spaces

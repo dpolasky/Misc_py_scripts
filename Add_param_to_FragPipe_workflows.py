@@ -4,8 +4,8 @@ rather than adding specified values of a param (done manually in the GUI) to spe
 """
 import os
 
-REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\workflows",
-             r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\src\resources\workflows"]
+REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\workflows",
+             r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\resources\workflows"]
 
 NEW_BUILD_VERSION = '23.0-build7'
 

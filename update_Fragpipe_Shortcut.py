@@ -8,7 +8,8 @@ import pathlib
 from win32com.client import Dispatch
 
 shortcut_path = r"C:\Users\dpolasky\Documents\fragpipe.exe.lnk"
-fragpipe_dir = r"C:\Users\dpolasky\Repositories\FragPipe\MSFragger-GUI\build\install"
+# fragpipe_dir = r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\build\install"
+fragpipe_dir = r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\build\install"
 
 
 def find_fragpipe_bin(install_dir):
