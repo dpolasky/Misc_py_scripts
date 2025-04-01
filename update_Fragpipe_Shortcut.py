@@ -20,7 +20,13 @@ def find_fragpipe_bin(install_dir):
     if len(paths) != 1:
         print('install dir is empty, need to build FragPipe first')
         sys.exit(1)
-    return str(pathlib.Path(paths[0]) / "bin" / "fragpipe.exe")
+    bin_path = pathlib.Path(paths[0]) / 'bin'
+    files = [os.path.join(bin_path, x) for x in os.listdir(bin_path) if x.endswith('.exe')]
+    if len(files) == 1:
+        return files[0]
+    else:
+        print('install dir is empty or could not find exe file. Do you need to build FragPipe first?')
+        sys.exit(1)
 
 
 def main():
