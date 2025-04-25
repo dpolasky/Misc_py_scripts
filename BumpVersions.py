@@ -4,15 +4,16 @@ convenience script for version bumping
 import re
 
 # edit this for use
-# WHICH_TOOLS = ['fragpipe']
-WHICH_TOOLS = ['ptms']
+WHICH_TOOLS = ['fragpipe']
+# WHICH_TOOLS = ['ptms']
 # WHICH_TOOLS = ['msfragger']
-# WHICH_TOOLS = ['batmass']
+# WHICH_TOOLS = ['batmass']     # note: not working
 
 
-FRAGPIPE_LOCS = [r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\com\dmtavt\fragpipe\Bundle.properties",
-                 r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\umich\msfragger\gui\Bundle.properties",
-                 r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\build.gradle"]
+FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\fragpipe-installer.iss",
+                 r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\Bundle.properties",
+                 r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build.gradle",
+                 ]
 FRAGPIPE_STR = "build"
 PTMS_LOCS = [r"C:\Users\dpolasky\Repositories\PTM-Shepherd\src\edu\umich\andykong\ptmshepherd\PTMShepherd.java",
              r"C:\Users\dpolasky\Repositories\PTM-Shepherd\build.gradle"]
@@ -47,7 +48,7 @@ def get_new_version_num(prev_detected_version, build_string):
         extra = "\";"
     else:
         extra = ""
-    new_build_num = int(build_splits[1].replace("\";\n", "")) + 1
+    new_build_num = int(re.sub(r"[\";\n]+", "", build_splits[1])) + 1
     if new_build_num < 10 and '0' in build_splits[1]:
         new_build_num = '0{}'.format(new_build_num)
     return '{}{}'.format(new_build_num, extra), build_splits
@@ -88,6 +89,21 @@ def bump_versions(tool_list, build_string):
                         splits = line.split('=')
                         new_build_num, build_splits = get_new_version_num(splits[1].replace('\'', ''), build_string)
                         newline = splits[0] + '= \'{}{}{}\'\n'.format(build_splits[0].strip(), build_string, new_build_num)
+                    else:
+                        newline = line
+                    output.append(newline)
+                with open(file, 'w') as writefile:
+                    for line in output:
+                        writefile.write(line)
+        if 'fragpipe-installer.iss' in file:
+            output = []
+            with open(file, 'r') as readfile:
+                for line in list(readfile):
+                    if '#define AppVersion' in line:
+                        splitstr = 'AppVersion '
+                        splits = line.split('AppVersion ')
+                        new_build_num, build_splits = get_new_version_num(splits[1].replace('\'', ''), build_string)
+                        newline = splits[0] + '{}{}{}{}\"\n'.format(splitstr, build_splits[0].strip(), build_string, new_build_num)
                     else:
                         newline = line
                     output.append(newline)
