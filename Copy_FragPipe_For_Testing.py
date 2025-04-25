@@ -14,7 +14,7 @@ import time
 # FRAGPIPE_REPO = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\FragPipe-GUI\build\install\fragpipe"
 FRAGPIPE_REPO = r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\build\install"
 MSFRAGGER_DIR = r"C:\Users\dpolasky\Repositories\MSFragger\target"
-FRAGPIPE_ZIP = r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\build\github-release"
+FRAGPIPE_ZIP = r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build\github-release"
 
 # SKIP_VERSION = False
 TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
