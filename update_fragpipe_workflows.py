@@ -7,12 +7,13 @@ TO USE: Save new workflow settings with a space (and whatever else) at the end o
 """
 
 import os
+import pathlib
 import shutil
+import sys
 
 # WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\FragPipe-GUI\build\classes\java\workflows"
-WORKFLOW_DIR = r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\build\install\fragpipe\workflows"
-REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\resources\workflows",
-             r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\workflows"]
+WORKFLOW_DIR = r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build\install"
+REPO_DIRS = [r"C:\Users\dpolasky\FragPipe\workflows"]
 
 REQUIRED_STRINGS = ['glyco', 'Labile', 'FPOP']
 EDIT_EXISTING_DEFAULTS = False   # if true, edit files with no spaces as well as with spaces
@@ -69,9 +70,7 @@ def edit_fileheader(workflow_file, new_filename_str):
     open the workflow file and edit the comment thing at the type that holds the saved filename
     to match the new filename
     :param workflow_file: full path of workflow file to edit
-    :type workflow_file: str
     :param new_filename_str: stripped down new filename (NOT full path)
-    :type new_filename_str: str
     :return: void
     :rtype:
     """
@@ -98,5 +97,18 @@ def edit_fileheader(workflow_file, new_filename_str):
             writefile.write(line)
 
 
+def detect_dir(base_dir):
+    """
+    find the appropriate directory to edit (resolving the fragpipe version)
+    """
+    dirs = [x for x in os.listdir(base_dir) if 'fragpipe' in x and 'jre' not in x]
+    if len(dirs) == 1:
+        dir_path = pathlib.Path(base_dir) / dirs[0] / 'workflows'
+        return dir_path
+    else:
+        print('Error: more than one fragpipe version found in {}'.format(base_dir))
+        sys.exit(1)
+
+
 if __name__ == '__main__':
-    main(WORKFLOW_DIR, REPO_DIRS, REQUIRED_STRINGS, EDIT_EXISTING_DEFAULTS)
+    main(detect_dir(WORKFLOW_DIR), REPO_DIRS, REQUIRED_STRINGS, EDIT_EXISTING_DEFAULTS)
