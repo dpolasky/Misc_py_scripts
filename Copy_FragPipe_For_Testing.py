@@ -50,7 +50,7 @@ def get_version_new(fragpipe_path):
     """
     get version from new FragPipe, where it is printed right in the path
     """
-    pattern = re.compile(r"([Ff]rag[Pp]ipe-[\d.]+-build\d+)")
+    pattern = re.compile(r"(fragpipe-[\d.]+(-build\d+)?)", re.IGNORECASE)
     match = re.search(pattern, fragpipe_path)
     return match.group(1)
 
