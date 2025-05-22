@@ -75,5 +75,24 @@ def combinations_with_replacement(n, r):
     return int(math.factorial(n + r - 1) / (math.factorial(r) * math.factorial(n - 1)))
 
 
+def riley_formula(sites, max_glycans, num_glycan_types):
+    """
+    sum i=0 to m of s! / ((s-i)! * i!) * g^i
+    s = number of sites
+    m = max glycans
+    g = number of glycan types
+    """
+    total = 0
+    for i in range(0, max_glycans):
+        current = math.factorial(sites) / (math.factorial(sites - i) * math.factorial(i)) * num_glycan_types ** i
+        total += current
+        print('i {} current {} total {}'.format(i, current, total))
+    print('total {}'.format(total))
+    print('2^sites {}'.format(2 ** sites))
+    print('3^sites {}'.format(3 ** sites))
+
+
 if __name__ == '__main__':
-    main(FASTA)
+    # main(FASTA)
+    riley_formula(sites=6, max_glycans=6, num_glycan_types=2)
+
