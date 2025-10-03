@@ -4,54 +4,66 @@ rather than adding specified values of a param (done manually in the GUI) to spe
 """
 import os
 
-REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\workflows",
-             r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\resources\workflows"]
+REPO_DIRS = [r"C:\Users\dpolasky\FragPipe\workflows"]
+# r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\resources\workflows"]
 
-NEW_BUILD_VERSION = '23.0-build7'
+NEW_BUILD_VERSION = '23.2-build12'
 
-# dict of tool name: [param = value]. NO SPACES around '='
+# lists of new params and remove params
+NEW_PARAMS = """mbg.allow_chimeric=false
+mbg.expand_db=1
+mbg.fdr=0.010
+mbg.max_glycan_q=0.01
+mbg.max_skips=0
+mbg.min_glycans=2
+mbg.min_psms=5
+mbg.residues_to_add=HexNAc(1),Hex(1),Fuc(1),NeuAc(1),NH4(1),Na(1),Fe(1)
+mbg.run-mbg=false
+ptmshepherd.annotate_assigned_mods=false
+ptmshepherd.glyco_lda=true
+ptmshepherd.glyco_lda_features=yscore,oxo,mass
+ptmshepherd.use_glycan_fragment_probs=true
+ptmshepherd.use_msfragger_localization=false
+"""
+REMOVE_PARAMS = """ptmshepherd.iterloc_maxEpoch=100
+ptmshepherd.iterloc_mode=false
+tab-run.delete_calibrated_mzml=false
+tmtintegrator.top3_pep=true
+"""
+
+
+# DEPRECATED: dict of tool name: [param = value]. NO SPACES around '='
 # NEW_PARAMS = {'fpop': ['coadaptr.fpop.run-fpop-coadaptr=false',
 #                        'coadaptr.fpop.fpop_masses=']
 #               }
-NEW_PARAMS = {}
+# NEW_PARAMS = {}
 
 # REMOVE_PARAMS = ['msfragger.mass_offset_file']          # list of full param names to remove
-REMOVE_PARAMS = ['speclibgen.easypqp.ignore_unannotated']
+# REMOVE_PARAMS = ['speclibgen.easypqp.ignore_unannotated']
 # REMOVE_PARAMS = []
 
-# NEW_PARAMS = {'ptmshepherd': ['remove_glycan_delta_mass=true']}       # dict of tool name: [param = value]. NO SPACES around '='
-# NEW_PARAMS = {
-#     'fpop': [
-#         'fpop-tmt=false',
-#         'label_control=',
-#         'label_fpop=',
-#         'region_size=1',
-#         'run-fpop=false',
-#         'subtract-control=false'
-#     ],
-#     'msfragger': ['output_report_topN_wwa=5'],
-#     'tmtintegrator': ['abn_type=0'],
-#     'workflow': ['misc.save-sdrf=true']
-# }
-# 'ptmshepherd':
-#     ['prob_dhexOx=2,0.5,0.1',
-#      'prob_dhexY=2,0.5',
-#      'prob_neuacOx=2,0.05,0.2',
-#      'prob_neugcOx=2,0.05,0.2',
-#      'prob_phosphoOx=2,0.05,0.2',
-#      'prob_regY=5,0.5',
-#      'prob_sulfoOx=2,0.05,0.2']}
-# NEW_PARAMS = {'opair': ['activation1=HCD',
-#                         'activation2=ETD',
-#                         'glyco_db=',
-#                         'max_glycans=4',
-#                         'max_isotope_error=2',
-#                         'min_isotope_error=0',
-#                         'ms1_tol=20',
-#                         'ms2_tol=20',
-#                         'reverse_scan_order=false',
-#                         'run-opair=false',
-#                         'single_scan_type=false']}
+
+def parse_params(param_str, strip_value):
+    """
+    parse input copied from a workflow file into a dict of tool name: [param = value]
+    Input should be like:
+        mbg.allow_chimeric=false
+        mbg.expand_db=1
+        mbg.fdr=0.010
+    """
+    splits = param_str.split('\n')
+    param_dict = {}
+    for line in splits:
+        if '.' in line:
+            tool_splits = line.split('.', 1)
+            if strip_value:
+                tool_splits[1] = tool_splits[1].split('=')[0]
+
+            if tool_splits[0] in param_dict.keys():
+                param_dict[tool_splits[0]].append(tool_splits[1])
+            else:
+                param_dict[tool_splits[0]] = [tool_splits[1]]
+    return param_dict
 
 
 def main(repo_dirs, new_param_dict, remove_param_list):
@@ -75,52 +87,15 @@ def main(repo_dirs, new_param_dict, remove_param_list):
             edit_params(file, new_param_dict, remove_param_list)
 
 
-# def edit_params(file, new_param_dict):
-#     """
-#
-#     :param file:
-#     :type file:
-#     :param new_param_dict:
-#     :type new_param_dict:
-#     :return:
-#     :rtype:
-#     """
-#     output = []
-#     tool_outputs = {}
-#     with open(file, 'r') as readfile:
-#         for line in list(readfile):
-#             if '.' in line:
-#                 # tool-specific line
-#                 splits = line.split('.', 1)
-#                 if splits[0] in tool_outputs.keys():
-#                     tool_outputs[splits[0]].append(splits[1])
-#                 else:
-#                     tool_outputs[splits[0]] = [splits[1]]
-#             else:
-#                 # headers
-#                 output.append(line)
-#
-#     # add new params and sort alphabetically within tools
-#     for tool_name, param in new_param_dict.items():
-#         tool_outputs[tool_name].append(param)
-#
-#     for tool_name, param_list in tool_outputs.items():
-#         for param in sorted(param_list):
-#             output.append('{}.{}'.format(tool_name, param))
-#
-#     with open(file, 'w') as writefile:
-#         for line in output:
-#             writefile.write(line)
-
-
-def edit_params(file, new_param_dict, remove_param_list):
+def edit_params(file, new_param_dict, remove_param_dict):
     """
 
     :param file: file to edit
     :type file: str
     :param new_param_dict: dict of tool name: [param = value]
     :type new_param_dict: dict
-    :param remove_param_list: params to remove
+    :param remove_param_dict: dict of tool name: [param = value]
+    :type remove_param_dict: dict
     :return: void
     :rtype:
     """
@@ -136,9 +111,10 @@ def edit_params(file, new_param_dict, remove_param_list):
                 tools_found.append(tool_splits[0])
 
                 # check for params to remove
-                param_splits = line.split('=')
-                if param_splits[0] in remove_param_list:
-                    skip_append = True
+                if tool_splits[0] in remove_param_dict.keys():
+                    param_splits = tool_splits[1].split('=')
+                    if param_splits[0] in remove_param_dict[tool_splits[0]]:
+                        skip_append = True
 
                 # check for adding totally new tool (find insert point)
                 for tool_name in current_file_copy.keys():
@@ -180,4 +156,4 @@ def edit_params(file, new_param_dict, remove_param_list):
 
 
 if __name__ == '__main__':
-    main(REPO_DIRS, NEW_PARAMS, REMOVE_PARAMS)
+    main(REPO_DIRS, parse_params(NEW_PARAMS, False), parse_params(REMOVE_PARAMS, True))
