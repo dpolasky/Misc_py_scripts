@@ -19,7 +19,11 @@ def main():
     :rtype:
     """
     if os.path.exists(PSM_FILE):
-        os.remove(PSM_FILE)
+        if SAVE_NAME_APPEND is not None:
+            save_name = os.path.splitext(PSM_FILE)[0] + '_' + SAVE_NAME_APPEND + os.path.splitext(PSM_FILE)[1]
+            shutil.move(PSM_FILE, save_name)
+        else:
+            os.remove(PSM_FILE)
     shutil.copy(FILE_TO_COPY, PSM_FILE)
 
 
