@@ -15,7 +15,8 @@ import sys
 WORKFLOW_DIR = r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build\install"
 REPO_DIRS = [r"C:\Users\dpolasky\FragPipe\workflows"]
 
-REQUIRED_STRINGS = ['glyco', 'Labile', 'FPOP']
+# REQUIRED_STRINGS = ['glyco', 'Labile', 'FPOP']
+REQUIRED_STRINGS = []
 EDIT_EXISTING_DEFAULTS = False   # if true, edit files with no spaces as well as with spaces
 # EDIT_EXISTING_DEFAULTS = True   # if true, edit files with no spaces as well as with spaces
 
@@ -38,31 +39,38 @@ def main(edit_dir, save_dir_list, required_strings, edit_existing_defaults):
     init_files = [x for x in os.listdir(edit_dir) if x.endswith('.workflow')]
     filepaths_to_copy = []
     for file in init_files:
-        for required_string in required_strings:
-            if required_string in file:
-                # edit file and save
-                splits = os.path.splitext(file)[0].split(' ')
-                if not edit_existing_defaults:
-                    if len(splits) == 1:
-                        # this is not an update file (either a default or has already been overwritten)
-                        continue
-                new_filename = os.path.join(edit_dir, splits[0] + os.path.splitext(file)[1])
-                print('copying workflow {}'.format(new_filename))
-
-                # edit the file to change the saved filename comment at the top
-                stripped_filename = os.path.splitext(os.path.basename(new_filename))[0]
-                edit_fileheader(os.path.join(edit_dir, file), stripped_filename)
-
-                # move the file
-                shutil.move(os.path.join(edit_dir, file), new_filename)
-                filepaths_to_copy.append(new_filename)
-                break
+        if len(required_strings) == 0:
+            edit_file(file, edit_dir, filepaths_to_copy, edit_existing_defaults)
+        else:
+            for required_string in required_strings:
+                if required_string in file:
+                    edit_file(file, edit_dir, filepaths_to_copy, edit_existing_defaults)
+                    break
 
     # copy to final dir
     for file in filepaths_to_copy:
         for save_dir in save_dir_list:
             savepath = os.path.join(save_dir, os.path.basename(file))
             shutil.copy(file, savepath)
+
+
+def edit_file(file, edit_dir, filepaths_to_copy, edit_existing_defaults):
+    # edit file and save
+    splits = os.path.splitext(file)[0].split(' ')
+    if not edit_existing_defaults:
+        if len(splits) == 1:
+            # this is not an update file (either a default or has already been overwritten)
+            return
+    new_filename = os.path.join(edit_dir, splits[0] + os.path.splitext(file)[1])
+    print('copying workflow {}'.format(new_filename))
+
+    # edit the file to change the saved filename comment at the top
+    stripped_filename = os.path.splitext(os.path.basename(new_filename))[0]
+    edit_fileheader(os.path.join(edit_dir, file), stripped_filename)
+
+    # move the file
+    shutil.move(os.path.join(edit_dir, file), new_filename)
+    filepaths_to_copy.append(new_filename)
 
 
 def edit_fileheader(workflow_file, new_filename_str):
