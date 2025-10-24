@@ -17,9 +17,9 @@ MSFRAGGER_DIR = r"C:\Users\dpolasky\Repositories\MSFragger\target"
 FRAGPIPE_ZIP = r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build\github-release"
 
 # SKIP_VERSION = False
-TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
 SKIP_VERSION = True     # new copy method generates the folder w/version name because of the unzip, so no need to detect and name version with py script
-# TEST_DIR = r"Z:\dpolasky\tools\_FragPipes\a_current"
+# TEST_DIR = r"Z:\dpolasky\projects\_BuildTests\tools"
+TEST_DIR = r"Z:\dpolasky\tools\_FragPipes\a_current"
 # SKIP_VERSION = True
 # COPY_MSF_TOO = True
 COPY_MSF_TOO = False
@@ -89,7 +89,7 @@ def main():
     # fragpipe_bin_path = update_Fragpipe_Shortcut.find_fragpipe_bin(FRAGPIPE_REPO)
     # fragpipe_dir_path = pathlib.Path(fragpipe_bin_path).parent.parent
 
-    paths = [os.path.join(FRAGPIPE_ZIP, x) for x in os.listdir(FRAGPIPE_ZIP) if '-jre' not in x]
+    paths = [os.path.join(FRAGPIPE_ZIP, x) for x in os.listdir(FRAGPIPE_ZIP) if ('-jre' not in x and '-windows' not in x)]
     if len(paths) != 1:
         print('install dir is empty, need to build FragPipe first')
         sys.exit(1)
