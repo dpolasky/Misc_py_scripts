@@ -1,12 +1,16 @@
 """
 convenience script for version bumping
 """
+import os
 import re
+import subprocess
 
 # WHICH_TOOLS = ['fragpipe']
 # WHICH_TOOLS = ['ptms']
 # WHICH_TOOLS = ['msfragger']
 WHICH_TOOLS = ['batmass']
+
+AUTO_COMMIT = False
 
 FRAGPIPE_LOCS = [
     r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\fragpipe-installer.iss",
@@ -60,19 +64,30 @@ def edit_file(file_path, line_fn):
         f.writelines(line_fn(line) for line in lines)
 
 
+def stage_and_commit(locs, version):
+    """Stage all files in locs and create a git commit with the bumped version."""
+    cwd = os.path.dirname(locs[0])
+    for f in locs:
+        subprocess.run(['git', 'add', f], cwd=cwd, check=True)
+    subprocess.run(['git', 'commit', '-m', 'Bump to {}'.format(version)], cwd=cwd, check=True)
+
+
 # ---------------------------------------------------------------------------
-# Per-tool bump functions
+# Per-tool bump functions — each returns the new version string
 # ---------------------------------------------------------------------------
 
 def bump_fragpipe():
+    new_version = None
     for file in FRAGPIPE_LOCS:
         if 'Bundle.properties' in file:
             def process(line):
+                nonlocal new_version
                 if 'gui.version=' not in line:
                     return line
                 splits = line.split('=')
                 new_num, parts = get_new_version_num(splits[1], FRAGPIPE_STR)
-                return splits[0] + '={}{}{}\n'.format(parts[0], FRAGPIPE_STR, new_num)
+                new_version = '{}{}{}'.format(parts[0], FRAGPIPE_STR, new_num)
+                return splits[0] + '={}\n'.format(new_version)
             edit_file(file, process)
 
         elif 'fragpipe-installer.iss' in file:
@@ -93,17 +108,21 @@ def bump_fragpipe():
                 return splits[0] + "= '{}{}{}\'\n".format(parts[0].strip(), FRAGPIPE_STR, new_num)
             edit_file(file, process)
 
+    return new_version
+
 
 def bump_ptms():
     """PTM-Shepherd uses plain dotted versions (e.g. 3.0.14); bump the patch component."""
+    new_version = None
     for file in PTMS_LOCS:
         if file.endswith('.java'):
             def process(line):
+                nonlocal new_version
                 m = re.match(r'(\s*public static final String version = ")([\d.]+)(";)', line)
                 if not m:
                     return line
-                new_ver = bump_patch_version(m.group(2))
-                return m.group(1) + new_ver + m.group(3) + '\n'
+                new_version = bump_patch_version(m.group(2))
+                return m.group(1) + new_version + m.group(3) + '\n'
             edit_file(file, process)
 
         elif 'build.gradle' in file:
@@ -115,8 +134,11 @@ def bump_ptms():
                 return m.group(1) + new_ver + m.group(3) + '\n'
             edit_file(file, process)
 
+    return new_version
+
 
 def bump_msfragger():
+    new_version = None
     for file in MSFRAGGER_LOCS:
         if file.endswith('pom.xml'):
             with open(file, 'r') as f:
@@ -127,7 +149,8 @@ def bump_msfragger():
                 if '<version>' in line and activated:
                     version_str = re.search(r'<version>(.*)</version>', line).group(1)
                     new_num, parts = get_new_version_num(version_str, MSFRAGGER_STR)
-                    line = line.replace(version_str, '{}{}{}'.format(parts[0], MSFRAGGER_STR, new_num))
+                    new_version = '{}{}{}'.format(parts[0], MSFRAGGER_STR, new_num)
+                    line = line.replace(version_str, new_version)
                 activated = 'msfragger' in line
                 output.append(line)
             with open(file, 'w') as f:
@@ -142,17 +165,21 @@ def bump_msfragger():
                 return splits[0] + '= {}{}{}\n'.format(parts[0].strip(), MSFRAGGER_STR, new_num)
             edit_file(file, process)
 
+    return new_version
+
 
 def bump_batmass():
     """Batmass uses plain dotted versions (e.g. 1.36.10); bump the patch component."""
+    new_version = None
     for file in BATMASS_LOCS:
         if file.endswith('.java'):
             def process(line):
+                nonlocal new_version
                 m = re.match(r'(\s*public static final String version = ")([\d.]+)(";)', line)
                 if not m:
                     return line
-                new_ver = bump_patch_version(m.group(2))
-                return m.group(1) + new_ver + m.group(3) + '\n'
+                new_version = bump_patch_version(m.group(2))
+                return m.group(1) + new_version + m.group(3) + '\n'
             edit_file(file, process)
 
         elif 'build.gradle' in file:
@@ -164,8 +191,17 @@ def bump_batmass():
                 return m.group(1) + new_ver + m.group(3) + '\n'
             edit_file(file, process)
 
+    return new_version
+
 
 # ---------------------------------------------------------------------------
+
+TOOL_LOCS = {
+    'fragpipe': FRAGPIPE_LOCS,
+    'ptms': PTMS_LOCS,
+    'msfragger': MSFRAGGER_LOCS,
+    'batmass': BATMASS_LOCS,
+}
 
 if __name__ == '__main__':
     dispatch = {
@@ -177,6 +213,11 @@ if __name__ == '__main__':
     for name in WHICH_TOOLS:
         fn = dispatch.get(name)
         if fn:
-            fn()
+            new_ver = fn()
+            if AUTO_COMMIT:
+                if new_ver:
+                    stage_and_commit(TOOL_LOCS[name], new_ver)
+                else:
+                    print('Warning: could not determine new version for {}; skipping commit'.format(name))
         else:
             print('invalid tool: {}'.format(name))
