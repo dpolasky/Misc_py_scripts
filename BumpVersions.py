@@ -8,11 +8,13 @@ import subprocess
 
 # WHICH_TOOLS = ['fragpipe']
 # WHICH_TOOLS = ['ptms']
+WHICH_TOOLS = ['glycoshepherd']
 # WHICH_TOOLS = ['msfragger']
-WHICH_TOOLS = ['batmass']
+# WHICH_TOOLS = ['batmass']
 
 AUTO_COMMIT = True
 COPY_TO_FRAGPIPE = True
+# COPY_TO_FRAGPIPE = False
 
 FRAGPIPE_LOCS = [
     r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\fragpipe-installer.iss",
@@ -20,18 +22,19 @@ FRAGPIPE_LOCS = [
     r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build.gradle",
 ]
 FRAGPIPE_STR = "build"
-
 PTMS_LOCS = [
     r"C:\Users\dpolasky\Repositories\PTM-Shepherd\src\edu\umich\andykong\ptmshepherd\PTMShepherd.java",
     r"C:\Users\dpolasky\Repositories\PTM-Shepherd\build.gradle",
 ]
-
+GLYCOSHEP_LOCS = [
+    r"C:\Users\dpolasky\Repositories\GlycoShepherd\src\glycoshepherd\GlycoShepherd.java",
+    r"C:\Users\dpolasky\Repositories\GlycoShepherd\build.gradle",
+]
 MSFRAGGER_LOCS = [
     r"C:\Users\dpolasky\Repositories\MSFragger\pom.xml",
     r"C:\Users\dpolasky\Repositories\MSFragger\src\edu\umich\andykong\msfragger\MSFragger.java",
 ]
 MSFRAGGER_STR = "rc"
-
 BATMASS_LOCS = [
     r"C:\Users\dpolasky\Repositories\batmass-io\batmass-io-java\batmass-io\src\main\java\umich\ms\msfiletoolbox\MsftbxInfo.java",
     r"C:\Users\dpolasky\Repositories\batmass-io\batmass-io-java\batmass-io\build.gradle",
@@ -39,14 +42,18 @@ BATMASS_LOCS = [
 
 FRAGPIPE_COPY_PATH = r"C:\Users\dpolasky\FragPipe\tools"
 PTMS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdPtmshepherd.java"]
+GLYCOSHEP_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdGlycoShepherd.java"]
 BATMASS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\ToolingUtils.java",
                          r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build.gradle"]
 
 PTMS_BUILD_DIR = r"C:\Users\dpolasky\Repositories\PTM-Shepherd"
-PTMS_GRADLE_TASK = "shadowJar"
+PTMS_GRADLE_TASK = "packageNoDeps"
 
 BATMASS_BUILD_DIR = r"C:\Users\dpolasky\Repositories\batmass-io\batmass-io-java\batmass-io"
 BATMASS_GRADLE_TASK = "shadowJar"
+
+GLYCO_BUILD_DIR = r"C:\Users\dpolasky\Repositories\GlycoShepherd"
+GLYCOSHEP_GRADLE_TASK = "packageNoDeps"
 
 
 def get_new_version_num(prev_detected_version, build_string):
@@ -207,6 +214,32 @@ def bump_batmass():
     return new_version
 
 
+def bump_glycoshepherd():
+    """GlycoShepherd uses plain dotted versions (e.g. 1.0.0); bump the patch component."""
+    new_version = None
+    for file in GLYCOSHEP_LOCS:
+        if file.endswith('.java'):
+            def process(line):
+                nonlocal new_version
+                m = re.match(r'(\s*public static final String version = ")([\d.]+)(";)', line)
+                if not m:
+                    return line
+                new_version = bump_patch_version(m.group(2))
+                return m.group(1) + new_version + m.group(3) + '\n'
+            edit_file(file, process)
+
+        elif 'build.gradle' in file:
+            def process(line):
+                m = re.match(r"(version = ')([\d.]+)(')", line)
+                if not m:
+                    return line
+                new_ver = bump_patch_version(m.group(2))
+                return m.group(1) + new_ver + m.group(3) + '\n'
+            edit_file(file, process)
+
+    return new_version
+
+
 # ---------------------------------------------------------------------------
 # Build, copy, and FragPipe reference update helpers
 # ---------------------------------------------------------------------------
@@ -219,6 +252,17 @@ def gradle_build(build_dir, task):
 
 def copy_jar_to_fragpipe(build_dir, jar_name):
     """Copy the built jar from build/libs to the FragPipe tools directory."""
+    # Derive the base name (without version) to find and delete previous versions.
+    # Jar names are expected to follow the pattern: <base>-<version>.jar
+    # e.g. 'ptmshepherd-2.1.0.jar' -> base prefix is 'ptmshepherd-'
+    jar_basename = jar_name[:-4]  # strip '.jar'
+    parts = jar_basename.rsplit('-', 1)
+    base_prefix = parts[0] + '-' if len(parts) == 2 else jar_basename
+    for existing in os.listdir(FRAGPIPE_COPY_PATH):
+        if existing.startswith(base_prefix) and existing.endswith('.jar') and existing != jar_name:
+            old_path = os.path.join(FRAGPIPE_COPY_PATH, existing)
+            os.remove(old_path)
+            print('Deleted previous version: {}'.format(old_path))
     src = os.path.join(build_dir, 'build', 'libs', jar_name)
     dst = os.path.join(FRAGPIPE_COPY_PATH, jar_name)
     shutil.copy2(src, dst)
@@ -230,6 +274,17 @@ def update_fragpipe_ptms(new_version):
     for file in PTMS_FRAGPIPE_LOCS:
         def process(line):
             m = re.match(r'(\s*public static final String SHEPHERD_VERSION = ")([\d.]+)(";)', line)
+            if not m:
+                return line
+            return m.group(1) + new_version + m.group(3) + '\n'
+        edit_file(file, process)
+
+
+def update_fragpipe_glycoshepherd(new_version):
+    """Update GLYCOSHEPHERD_VERSION in CmdGlycoshepherd.java to new_version."""
+    for file in GLYCOSHEP_FRAGPIPE_LOCS:
+        def process(line):
+            m = re.match(r'(\s*public static final String GLYCOSHEPHERD_VERSION = ")([\d.]+)(";)', line)
             if not m:
                 return line
             return m.group(1) + new_version + m.group(3) + '\n'
@@ -263,6 +318,7 @@ TOOL_LOCS = {
     'ptms': PTMS_LOCS,
     'msfragger': MSFRAGGER_LOCS,
     'batmass': BATMASS_LOCS,
+    'glycoshepherd': GLYCOSHEP_LOCS
 }
 
 if __name__ == '__main__':
@@ -271,6 +327,7 @@ if __name__ == '__main__':
         'ptms': bump_ptms,
         'msfragger': bump_msfragger,
         'batmass': bump_batmass,
+        'glycoshepherd': bump_glycoshepherd
     }
     for name in WHICH_TOOLS:
         fn = dispatch.get(name)
@@ -290,5 +347,9 @@ if __name__ == '__main__':
                     gradle_build(BATMASS_BUILD_DIR, BATMASS_GRADLE_TASK)
                     copy_jar_to_fragpipe(BATMASS_BUILD_DIR, 'batmass-io-{}.jar'.format(new_ver))
                     update_fragpipe_batmass(new_ver)
+                elif name == 'glycoshepherd':
+                    gradle_build(GLYCO_BUILD_DIR, GLYCOSHEP_GRADLE_TASK)
+                    copy_jar_to_fragpipe(GLYCO_BUILD_DIR, 'glycoshepherd-{}.jar'.format(new_ver))
+                    update_fragpipe_glycoshepherd(new_ver)
         else:
             print('invalid tool: {}'.format(name))
