@@ -112,6 +112,15 @@ def rename_remove_msconvert_append(file_list):
         os.rename(file, new_filename)
 
 
+def rename_remove_msconvert_file2(file_list):
+    """
+    remove the " (2)." appended by MSConvert when it creates a copy of an existing file (e.g., "file (2)..mzML")
+    """
+    for file in file_list:
+        new_filename = file.replace(' (2).', '')
+        os.rename(file, new_filename)
+
+
 def rename_ptms_configs(file_list, new_date, new_version=''):
     """
     Rename a set of PTM-S config files with new date and (optional) PTMS version. PTMS files assumed to be named
@@ -314,4 +323,6 @@ if __name__ == '__main__':
 
     # rename_ptms_configs(files, PTMS_DATE, PTMS_VERSION)
     # remove_all_except_keep_list(files, KEEP_LIST, NEW_NAME)
-    rename_remove_msconvert_append(files)
+
+    # rename_remove_msconvert_append(files)
+    rename_remove_msconvert_file2(files)
