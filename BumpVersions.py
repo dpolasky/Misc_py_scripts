@@ -8,9 +8,10 @@ import subprocess
 
 # WHICH_TOOLS = ['fragpipe']
 # WHICH_TOOLS = ['ptms']
-WHICH_TOOLS = ['glycoshepherd']
+# WHICH_TOOLS = ['glycoshepherd']
 # WHICH_TOOLS = ['msfragger']
 # WHICH_TOOLS = ['batmass']
+WHICH_TOOLS = ['glycoreporter']
 
 AUTO_COMMIT = True
 COPY_TO_FRAGPIPE = True
@@ -30,6 +31,9 @@ GLYCOSHEP_LOCS = [
     r"C:\Users\dpolasky\Repositories\GlycoShepherd\src\glycoshepherd\GlycoShepherd.java",
     r"C:\Users\dpolasky\Repositories\GlycoShepherd\build.gradle",
 ]
+GLYCOREPORTER_LOCS = [
+    r"C:\Users\dpolasky\Repositories\GlycoReporter\build.gradle",
+]
 MSFRAGGER_LOCS = [
     r"C:\Users\dpolasky\Repositories\MSFragger\pom.xml",
     r"C:\Users\dpolasky\Repositories\MSFragger\src\edu\umich\andykong\msfragger\MSFragger.java",
@@ -43,6 +47,7 @@ BATMASS_LOCS = [
 FRAGPIPE_COPY_PATH = r"C:\Users\dpolasky\FragPipe\tools"
 PTMS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdPtmshepherd.java"]
 GLYCOSHEP_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdGlycoShepherd.java"]
+GLYCOREPORTER_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdGlycoReporter.java"]
 BATMASS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\ToolingUtils.java",
                          r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build.gradle"]
 
@@ -54,6 +59,9 @@ BATMASS_GRADLE_TASK = "shadowJar"
 
 GLYCO_BUILD_DIR = r"C:\Users\dpolasky\Repositories\GlycoShepherd"
 GLYCOSHEP_GRADLE_TASK = "packageNoDeps"
+
+GLYCOREPORTER_BUILD_DIR = r"C:\Users\dpolasky\Repositories\GlycoReporter"
+GLYCOREPORTER_GRADLE_TASK = "packageNoDeps"
 
 
 def get_new_version_num(prev_detected_version, build_string):
@@ -240,9 +248,35 @@ def bump_glycoshepherd():
     return new_version
 
 
+def bump_glycoreporter():
+    """GlycoReporter uses plain dotted versions (e.g. 1.0.0); bump the patch component."""
+    new_version = None
+    for file in GLYCOREPORTER_LOCS:
+        # if file.endswith('.java'):
+        #     def process(line):
+        #         nonlocal new_version
+        #         m = re.match(r'(\s*public static final String version = ")([\d.]+)(";)', line)
+        #         if not m:
+        #             return line
+        #         new_version = bump_patch_version(m.group(2))
+        #         return m.group(1) + new_version + m.group(3) + '\n'
+        #     edit_file(file, process)
+        if 'build.gradle' in file:
+            def process(line):
+                nonlocal new_version
+                m = re.match(r"(version = ')([\d.]+)(')", line)
+                if not m:
+                    return line
+                new_version = bump_patch_version(m.group(2))
+                return m.group(1) + new_version + m.group(3) + '\n'
+            edit_file(file, process)
+
+    return new_version
+
 # ---------------------------------------------------------------------------
 # Build, copy, and FragPipe reference update helpers
 # ---------------------------------------------------------------------------
+
 
 def gradle_build(build_dir, task):
     """Run a gradle task in build_dir using the local gradle wrapper."""
@@ -291,6 +325,17 @@ def update_fragpipe_glycoshepherd(new_version):
         edit_file(file, process)
 
 
+def update_fragpipe_glycoreporter(new_version):
+    """Update GLYCOREPORTER_VERSION in CmdGlycoReporter.java to new_version."""
+    for file in GLYCOREPORTER_FRAGPIPE_LOCS:
+        def process(line):
+            m = re.match(r'(\s*public static final String GLYCOREPORTER_VERSION = ")([\d.]+)(";)', line)
+            if not m:
+                return line
+            return m.group(1) + new_version + m.group(3) + '\n'
+        edit_file(file, process)
+
+
 def update_fragpipe_batmass(new_version):
     """Update batmass-io jar references in ToolingUtils.java and FragPipe's build.gradle."""
     for file in BATMASS_FRAGPIPE_LOCS:
@@ -318,7 +363,8 @@ TOOL_LOCS = {
     'ptms': PTMS_LOCS,
     'msfragger': MSFRAGGER_LOCS,
     'batmass': BATMASS_LOCS,
-    'glycoshepherd': GLYCOSHEP_LOCS
+    'glycoshepherd': GLYCOSHEP_LOCS,
+    'glycoreporter': GLYCOREPORTER_LOCS
 }
 
 if __name__ == '__main__':
@@ -327,7 +373,8 @@ if __name__ == '__main__':
         'ptms': bump_ptms,
         'msfragger': bump_msfragger,
         'batmass': bump_batmass,
-        'glycoshepherd': bump_glycoshepherd
+        'glycoshepherd': bump_glycoshepherd,
+        'glycoreporter': bump_glycoreporter
     }
     for name in WHICH_TOOLS:
         fn = dispatch.get(name)
@@ -351,5 +398,9 @@ if __name__ == '__main__':
                     gradle_build(GLYCO_BUILD_DIR, GLYCOSHEP_GRADLE_TASK)
                     copy_jar_to_fragpipe(GLYCO_BUILD_DIR, 'glycoshepherd-{}.jar'.format(new_ver))
                     update_fragpipe_glycoshepherd(new_ver)
+                elif name == 'glycoreporter':
+                    gradle_build(GLYCOREPORTER_BUILD_DIR, GLYCOREPORTER_GRADLE_TASK)
+                    copy_jar_to_fragpipe(GLYCOREPORTER_BUILD_DIR, 'glycoreporter-{}.jar'.format(new_ver))
+                    update_fragpipe_glycoreporter(new_ver)
         else:
             print('invalid tool: {}'.format(name))
