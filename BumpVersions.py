@@ -68,6 +68,9 @@ GLYCOSHEP_GRADLE_TASK = "packageNoDeps"
 GLYCOREPORTER_BUILD_DIR = r"C:\Users\dpolasky\Repositories\GlycoReporter"
 GLYCOREPORTER_GRADLE_TASK = "packageNoDeps"
 
+FRAGVIZ_BUILD_DIR = r"C:\Users\dpolasky\Repositories\FragViz"
+FRAGVIZ_FRAGPIPE_DIR = r"C:\Users\dpolasky\Repositories\FragPipe-dev\tools\fragviz"
+
 
 def get_new_version_num(prev_detected_version, build_string):
     """Parse a version containing build_string + numeric suffix; return incremented version."""
@@ -375,6 +378,31 @@ def update_fragpipe_batmass(new_version):
             edit_file(file, process)
 
 
+def build_fragviz():
+    """Run FragViz's build.bat to produce the Windows (native) and Linux (via WSL) release binaries."""
+    build_script = os.path.join(FRAGVIZ_BUILD_DIR, 'build.bat')
+    subprocess.run([build_script], cwd=FRAGVIZ_BUILD_DIR, check=True)
+
+
+def update_fragpipe_fragviz():
+    """Copy the built FragViz Windows/Linux binaries into FragPipe's tools/fragviz directories."""
+    windows_src = os.path.join(FRAGVIZ_BUILD_DIR, 'src-tauri', 'target', 'release', 'fragviz.exe')
+    windows_dst = os.path.join(FRAGVIZ_FRAGPIPE_DIR, 'windows', 'fragviz-windows-x86_64.exe')
+    if os.path.isfile(windows_src):
+        shutil.copy2(windows_src, windows_dst)
+        print('Copied {} -> {}'.format(windows_src, windows_dst))
+    else:
+        print('Warning: Windows FragViz binary not found at {}; skipping copy'.format(windows_src))
+
+    linux_src = os.path.join(FRAGVIZ_BUILD_DIR, 'src-tauri', 'target', 'x86_64-unknown-linux-gnu', 'release', 'fragviz')
+    linux_dst = os.path.join(FRAGVIZ_FRAGPIPE_DIR, 'linux', 'fragviz-linux-x86_64')
+    if os.path.isfile(linux_src):
+        shutil.copy2(linux_src, linux_dst)
+        print('Copied {} -> {}'.format(linux_src, linux_dst))
+    else:
+        print('Warning: Linux FragViz binary not found at {} (WSL build may not be set up); skipping copy'.format(linux_src))
+
+
 # ---------------------------------------------------------------------------
 
 TOOL_LOCS = {
@@ -423,5 +451,8 @@ if __name__ == '__main__':
                     gradle_build(GLYCOREPORTER_BUILD_DIR, GLYCOREPORTER_GRADLE_TASK)
                     copy_jar_to_fragpipe(GLYCOREPORTER_BUILD_DIR, 'glycoreporter-{}.jar'.format(new_ver))
                     update_fragpipe_glycoreporter(new_ver)
+                elif name == 'fragviz':
+                    build_fragviz()
+                    update_fragpipe_fragviz()
         else:
             print('invalid tool: {}'.format(name))
