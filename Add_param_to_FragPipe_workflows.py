@@ -4,31 +4,19 @@ rather than adding specified values of a param (done manually in the GUI) to spe
 """
 import os
 
-REPO_DIRS = [r"C:\Users\dpolasky\FragPipe\workflows"]
+REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe-dev\workflows"]
 # r"C:\Users\dpolasky\Repositories\FragPipe\FragPipe-GUI\src\resources\workflows"]
 
-NEW_BUILD_VERSION = '23.2-build12'
+NEW_BUILD_VERSION = '24.1-build39'
 
 # lists of new params and remove params
-NEW_PARAMS = """mbg.allow_chimeric=false
-mbg.expand_db=1
-mbg.fdr=0.010
-mbg.max_glycan_q=0.01
-mbg.max_skips=0
-mbg.min_glycans=2
-mbg.min_psms=5
-mbg.residues_to_add=HexNAc(1),Hex(1),Fuc(1),NeuAc(1),NH4(1),Na(1),Fe(1)
-mbg.run-mbg=false
-ptmshepherd.annotate_assigned_mods=false
-ptmshepherd.glyco_lda=true
-ptmshepherd.glyco_lda_features=yscore,oxo,mass
-ptmshepherd.use_glycan_fragment_probs=true
-ptmshepherd.use_msfragger_localization=false
+NEW_PARAMS = """
+glycoreporter.max_138_144=-1.0
+glycoreporter.min_comp_delta=0
+glycoreporter.min_loc_delta=0
+glycoreporter.no_nglyc_sequon=false
 """
-REMOVE_PARAMS = """ptmshepherd.iterloc_maxEpoch=100
-ptmshepherd.iterloc_mode=false
-tab-run.delete_calibrated_mzml=false
-tmtintegrator.top3_pep=true
+REMOVE_PARAMS = """
 """
 
 

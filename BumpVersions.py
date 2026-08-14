@@ -19,9 +19,9 @@ COPY_TO_FRAGPIPE = True
 # COPY_TO_FRAGPIPE = False
 
 FRAGPIPE_LOCS = [
-    r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\fragpipe-installer.iss",
-    r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\Bundle.properties",
-    r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build.gradle",
+    r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\fragpipe-installer.iss",
+    r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\Bundle.properties",
+    r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\build.gradle",
 ]
 FRAGPIPE_STR = "build"
 PTMS_LOCS = [
@@ -49,12 +49,12 @@ FRAGVIZ_LOCS = [r"C:\Users\dpolasky\Repositories\FragViz\src-tauri\Cargo.lock",
                 r"C:\Users\dpolasky\Repositories\FragViz\src-tauri\tauri.conf.json"
                 ]
 
-FRAGPIPE_COPY_PATH = r"C:\Users\dpolasky\FragPipe\tools"
-PTMS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdPtmshepherd.java"]
-GLYCOSHEP_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdGlycoShepherd.java"]
-GLYCOREPORTER_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdGlycoReporter.java"]
-BATMASS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\ToolingUtils.java",
-                         r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build.gradle"]
+FRAGPIPE_COPY_PATH = r"C:\Users\dpolasky\Repositories\FragPipe-dev\tools"
+PTMS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdPtmshepherd.java"]
+GLYCOSHEP_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdGlycoShepherd.java"]
+GLYCOREPORTER_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdGlycoReporter.java"]
+BATMASS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\ToolingUtils.java",
+                         r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\build.gradle"]
 
 PTMS_BUILD_DIR = r"C:\Users\dpolasky\Repositories\PTM-Shepherd"
 PTMS_GRADLE_TASK = "packageNoDeps"

@@ -12,11 +12,11 @@ import shutil
 import sys
 
 # WORKFLOW_DIR = r"C:\Users\dpolasky\GitRepositories\FragPipe\FragPipe\FragPipe-GUI\build\classes\java\workflows"
-WORKFLOW_DIR = r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\build\install"
-REPO_DIRS = [r"C:\Users\dpolasky\FragPipe\workflows"]
+WORKFLOW_DIR = r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\build\install"
+REPO_DIRS = [r"C:\Users\dpolasky\Repositories\FragPipe-dev\workflows"]
 
-# REQUIRED_STRINGS = ['glyco', 'Labile', 'FPOP']
-REQUIRED_STRINGS = []
+REQUIRED_STRINGS = ['glyco', 'Labile', 'FPOP']
+# REQUIRED_STRINGS = []
 EDIT_EXISTING_DEFAULTS = False   # if true, edit files with no spaces as well as with spaces
 # EDIT_EXISTING_DEFAULTS = True   # if true, edit files with no spaces as well as with spaces
 
