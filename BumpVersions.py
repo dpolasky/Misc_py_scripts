@@ -11,7 +11,8 @@ import subprocess
 # WHICH_TOOLS = ['glycoshepherd']
 # WHICH_TOOLS = ['msfragger']
 # WHICH_TOOLS = ['batmass']
-WHICH_TOOLS = ['glycoreporter']
+# WHICH_TOOLS = ['glycoreporter']
+WHICH_TOOLS = ['fragviz']
 
 AUTO_COMMIT = True
 COPY_TO_FRAGPIPE = True
@@ -43,6 +44,10 @@ BATMASS_LOCS = [
     r"C:\Users\dpolasky\Repositories\batmass-io\batmass-io-java\batmass-io\src\main\java\umich\ms\msfiletoolbox\MsftbxInfo.java",
     r"C:\Users\dpolasky\Repositories\batmass-io\batmass-io-java\batmass-io\build.gradle",
 ]
+FRAGVIZ_LOCS = [r"C:\Users\dpolasky\Repositories\FragViz\src-tauri\Cargo.lock",
+                r"C:\Users\dpolasky\Repositories\FragViz\src-tauri\Cargo.toml",
+                r"C:\Users\dpolasky\Repositories\FragViz\src-tauri\tauri.conf.json"
+                ]
 
 FRAGPIPE_COPY_PATH = r"C:\Users\dpolasky\FragPipe\tools"
 PTMS_FRAGPIPE_LOCS = [r"C:\Users\dpolasky\FragPipe\FragPipe-GUI\src\main\java\org\nesvilab\fragpipe\cmd\CmdPtmshepherd.java"]
@@ -136,6 +141,20 @@ def bump_fragpipe():
                 return splits[0] + "= '{}{}{}\'\n".format(parts[0].strip(), FRAGPIPE_STR, new_num)
             edit_file(file, process)
 
+    return new_version
+
+
+def bump_fragviz():
+    new_version = None
+    for file in FRAGVIZ_LOCS:
+        def process(line):
+            nonlocal new_version
+            m = re.match(r'(\s*\"version\": \")([\d.]+)(\",)', line)
+            if not m:
+                return line
+            new_version = bump_patch_version(m.group(2))
+            return m.group(1) + new_version + m.group(3) + '\n'
+        edit_file(file, process)
     return new_version
 
 
@@ -364,7 +383,8 @@ TOOL_LOCS = {
     'msfragger': MSFRAGGER_LOCS,
     'batmass': BATMASS_LOCS,
     'glycoshepherd': GLYCOSHEP_LOCS,
-    'glycoreporter': GLYCOREPORTER_LOCS
+    'glycoreporter': GLYCOREPORTER_LOCS,
+    'fragviz': FRAGVIZ_LOCS,
 }
 
 if __name__ == '__main__':
@@ -374,7 +394,8 @@ if __name__ == '__main__':
         'msfragger': bump_msfragger,
         'batmass': bump_batmass,
         'glycoshepherd': bump_glycoshepherd,
-        'glycoreporter': bump_glycoreporter
+        'glycoreporter': bump_glycoreporter,
+        'fragviz': bump_fragviz,
     }
     for name in WHICH_TOOLS:
         fn = dispatch.get(name)
