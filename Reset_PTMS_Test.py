@@ -12,9 +12,13 @@ import pathlib
 # FILE_TO_COPY = r"C:\_Local\_software-tests\PTMS_tests\psm - Copy.tsv"           # PTMS
 # FILE_TO_COPY = r"C:\_Local\_software-tests\PTMS_tests\2025-07-16_yeast-nh4_psm - Copy.tsv"
 # FILE_TO_COPY = r"C:\_Local\_software-tests\PTMS_tests\2025-07-23_yeast-3467_psm - Copy.tsv"
-FILE_TO_COPY = r"C:\_Local\_software-tests\PTMS_tests\mbg_psm - Copy.tsv"
+# FILE_TO_COPY = r"C:\_Local\_software-tests\PTMS_tests\_Regression-test\2026-05-08_glycoshepherd_0.1.0\psm - Copy.tsv"
+# PSM_FILE = r"C:\_Local\_software-tests\PTMS_tests\_Regression-test\2026-05-08_glycoshepherd_0.1.0\psm.tsv"
+FILE_TO_COPY = r"C:\_Local\_software-tests\PTMS_tests\_Regression-test\_PTMS-results-before-split\psm - Copy.tsv"
+PSM_FILE = r"C:\_Local\_software-tests\PTMS_tests\_Regression-test\_PTMS-results-before-split\psm.tsv"
+# FILE_TO_COPY = r"C:\_Local\_software-tests\PTMS_tests\mbg_psm - Copy.tsv"
 # PSM_FILE = r"C:\_Local\_software-tests\PTMS_tests\psm.tsv"
-PSM_FILE = r"C:\_Local\_software-tests\PTMS_tests\psm_mbg.tsv"
+# PSM_FILE = r"C:\_Local\_software-tests\PTMS_tests\psm_mbg.tsv"
 # SAVE_NAME_APPEND = "LDA_psm"
 # SAVE_NAME_APPEND = "base_psm"
 SAVE_NAME_APPEND = None
@@ -42,7 +46,7 @@ def main():
     shutil.copy(FILE_TO_COPY, PSM_FILE)
 
     # handle unfiltered_psm.tsv if present
-    output_dir = pathlib.Path(PSM_FILE).parent / 'ptm-shepherd-output'
+    output_dir = pathlib.Path(PSM_FILE).parent / 'glyco-shepherd-output'
     if os.path.exists(output_dir):
         possible_paths = [os.path.join(output_dir, x) for x in os.listdir(output_dir) if x.endswith('unfiltered_psm.tsv')]
         if len(possible_paths) == 1:

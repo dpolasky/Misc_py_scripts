@@ -7,8 +7,10 @@ import shutil
 
 
 REPLACE_TEXT = {
-    # "2026-05-15": "2026-05-19",
-    "_fdr5": "_fdr5-gslib"
+    "_base": ["_HGI-A", "_CPTAC", "_MBG", "_yeast", "_Riley", "_pG2mouse", "_Coon"],
+    # "_base": ["_HGI-A", "_CPTAC", "_MBG", "_yeast"],
+    # "_mouse": ["_Riley", "_pG2mouse", "_Coon"],
+    # "_fdr5": ["_fdr5-gslib"]
 }
 
 
@@ -18,9 +20,14 @@ def copy_file(file, replace_text_list):
     """
     original_path = file
     for text in replace_text_list.keys():
-        file = file.replace(text, replace_text_list[text])
-    print('copying {} to {}'.format(original_path, file))
-    shutil.copy(original_path, file)
+        for new_text in replace_text_list[text]:
+            file = original_path
+            file = file.replace(text, new_text)
+            print('copying {} to {}'.format(original_path, file))
+            try:
+                shutil.copy(original_path, file)
+            except shutil.SameFileError:
+                print('warning: unable to edit file {} using replace text {}'.format(original_path, new_text))
 
 
 if __name__ == '__main__':
