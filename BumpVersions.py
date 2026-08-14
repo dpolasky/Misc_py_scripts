@@ -17,6 +17,8 @@ WHICH_TOOLS = ['fragviz']
 AUTO_COMMIT = True
 COPY_TO_FRAGPIPE = True
 # COPY_TO_FRAGPIPE = False
+NO_BUMP_COPY_ONLY = True   # if True, will copy the jar to FragPipe without bumping the version or committing changes
+# NO_BUMP_COPY_ONLY = False   # if True, will copy the jar to FragPipe without bumping the version or committing changes
 
 FRAGPIPE_LOCS = [
     r"C:\Users\dpolasky\Repositories\FragPipe-dev\FragPipe-GUI\fragpipe-installer.iss",
@@ -94,6 +96,9 @@ def bump_patch_version(version_str):
 
 def edit_file(file_path, line_fn):
     """Apply line_fn to every line in file_path and write the result back."""
+    if NO_BUMP_COPY_ONLY:
+        print('Skipping edit of {}; NO_BUMP_COPY_ONLY is True'.format(file_path))
+        return
     with open(file_path, 'r') as f:
         lines = list(f)
     with open(file_path, 'w') as f:
@@ -429,10 +434,10 @@ if __name__ == '__main__':
         fn = dispatch.get(name)
         if fn:
             new_ver = fn()
-            if not new_ver:
+            if not new_ver and not NO_BUMP_COPY_ONLY:
                 print('Warning: could not determine new version for {}; skipping remaining steps'.format(name))
                 continue
-            if AUTO_COMMIT:
+            if AUTO_COMMIT and not NO_BUMP_COPY_ONLY:
                 stage_and_commit(TOOL_LOCS[name], new_ver)
             if COPY_TO_FRAGPIPE:
                 if name == 'ptms':
